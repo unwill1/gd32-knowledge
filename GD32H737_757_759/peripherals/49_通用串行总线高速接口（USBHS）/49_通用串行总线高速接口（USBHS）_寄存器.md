@@ -1,0 +1,1296 @@
+# 49.7. USBHS 寄存器
+
+USBHS0 基地址：0x4004 0000
+
+USBHS1 基地址：0x4008 0000
+
+# 49.7.1. 全局控制与状态寄存器组
+
+全局 OTG 控制和状态寄存器（USBHS_GOTGCS）
+
+地址偏移：0x0000
+
+复位值：0x0000 0800
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>OV</td><td>BSV</td><td>ASV</td><td>DI</td><td>CIDPS</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>rw</td><td>r</td><td>r</td><td>r</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td colspan="3">保留</td><td>EHE</td><td>DHPEN</td><td>HHPEN</td><td>HNPREQ</td><td>HNPS</td><td>BVOV</td><td>BVOE</td><td>AVOV</td><td>AVOE</td><td>VOV</td><td>保留</td><td>SRPREQ</td><td>SRPS</td></tr><tr><td></td><td></td><td></td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>r</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>r</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:21</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>20</td><td>OV</td><td>OTG版本选择0: 1.3版本,SRP支持数据线脉冲和VBUS脉冲1: 2.0版本,SRP仅支持数据线脉冲</td></tr><tr><td>19</td><td>BSV</td><td>B会话有效(在OTG协议中描述)0: OTG B设备VBUS电压水平低于VBSESSVLD1: OTG B设备VBUS电压水平不低于VBSESSVLD注意:仅在OTB B设备模式下可访问</td></tr><tr><td>18</td><td>ASV</td><td>A会话有效A主机模式收发器状态0: OTG A设备VBUS电压水平低于VASESSVLD1: OTG A设备VBUS电压水平不低于VASESSVLD在会话的开始,A设备默认是主机。注意:仅在OTG A设备模式下可访问</td></tr><tr><td>17</td><td>DI</td><td>去抖动间隔</td></tr></table>
+
+检测到连接的去抖动间隔。
+
+0：当USB总线上发生插入和连接时，表示长去抖动间隔
+
+1：当HNP协议中使用一个软连接时，指示短去抖动间隔
+
+注意：仅在主机模式下可访问
+
+16 CIDPS ID引脚状态
+
+连接器ID引脚的电压水平
+
+0：USBHS工作在A设备模式
+
+1：USBHS工作在B设备模式
+
+注意：在设备和主机模式下均可访问
+
+15:13 保留 必须保持复位值。
+
+12 EHE 嵌入式主机使能
+
+0：选择OTG A设备状态
+
+1：选择嵌入式主机状态
+
+11 DHNPEN 设备HNP使能
+
+使能B设备HNP功能。如果该控制位清除，当应用置位USBHS_GOTGCS寄存器中的HNPREQ控制位c时，USBHS并不启动HNP协议。
+
+0：HNP功能不使能
+
+1：HNP功能使能
+
+注意：仅在设备模式下访问
+
+10 HHNPEN 主机HNP使能
+
+使能A设备HNP功能。如果该控制位清除，USBHS不能够响应B设备的HNP请求。
+
+0：HNP功能不使能
+
+1：HNP功能使能
+
+注意：仅在主机模式下访问
+
+9 HNPREQ HNP请求
+
+软件通过置位该控制位在USB总线上启动一个HNP。当USBHS_GOTGINTF寄存器
+
+中HNPEND控制位置位时，软件可以通过向该控制位写0或者清除
+
+USBHS_GOTGINTF寄存器中的HNPEND控制位来清除该控制位。
+
+0：不发送HNP请求
+
+1：发送HNP请求
+
+注意：仅在设备模式下访问
+
+8 HNPS HNP成功标志位
+
+当HNP成功时，该标志位由内核置位。当HNPREQ置位时，该控制位被清除。
+
+0：HNP失败
+
+1：HNP成功
+
+注意：仅在设备模式下访问
+
+7 BVOV B外设会话有效覆盖值
+
+0：BVOE=1时，B外设会话有效值为0
+
+1：BVOE=1时，B外设会话有效值为1
+
+注意：仅在设备模式下可访问
+
+<table><tr><td>6</td><td>BVOE</td><td>B外设会话有效覆盖使能0:覆盖禁用,从PHY接收内部B外设会话有效值1:覆盖使能,从PHY接收的内部B外设会话有效值被BVOV值覆盖注意:仅在设备模式下可访问</td></tr><tr><td>5</td><td>AVOV</td><td>A外设会话有效覆盖值0:AVOE=1时,A外设会话有效值为01:AVOE=1时,A外设会话有效值为1注意:仅在设备模式下可访问</td></tr><tr><td>4</td><td>AVOE</td><td>A外设会话有效覆盖使能0:覆盖禁用,从PHY接收内部A外设会话有效值1:覆盖使能,从PHY接收的内部A外设会话有效值被AVOV值覆盖注意:仅在设备模式下可访问</td></tr><tr><td>3</td><td>VOV</td><td>VBUS有效覆盖值0:VOE=1时,VBUS有效值为01:VOE=1时,VBUS有效值为1注意:仅在设备模式下可访问</td></tr><tr><td>2</td><td>VOE</td><td>VBUS有效覆盖使能0:覆盖禁用,从PHY接收VBUS有效值1:覆盖使能,从PHY接收的VBUS有效值被VOV值覆盖注意:仅在设备模式下可访问</td></tr><tr><td>1</td><td>SRPREQ</td><td>SRP请求软件通过置位该控制位在USB总线上启动一个SRP会话请求。当USBHS_GOTGINTF寄存器中的SRPEND控制位置位时,软件可以通过向该控制位写0或者清除USBHS_GOTGINTF寄存器中的SRPEND控制位来清除该控制位。0:没有会话请求1:会话请求注意:仅在设备模式下访问</td></tr><tr><td>0</td><td>SRPS</td><td>SRP会话请求成功当SRP会话请求成功时,该标志位由内核置位。当SRPREQ控制位被置位时,该标志位被清除。0:SRP会话请求失败1:SRP会话请求成功注意:仅在设备模式下访问</td></tr></table>
+
+
+全局 OTG 中断状态寄存器（USBHS_GOTGINTF）
+
+
+地址偏移：0x0004
+
+复位值：0x0000 0000
+
+该寄存器只能按字（32位）访问
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr></table>
+
+<table><tr><td colspan="9">保留</td><td>IDCHG</td><td>DF</td><td>ADTO</td><td>HNPDET</td><td>保留</td></tr><tr><td colspan="9"></td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td></td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td></tr><tr><td colspan="6">保留</td><td>HNPEND</td><td>SRPEND</td><td colspan="4">保留</td><td>SESEND</td><td>保留</td></tr><tr><td colspan="6"></td><td>rc_w1</td><td>rc_w1</td><td colspan="4"></td><td>rc_w1</td><td></td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:21</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>20</td><td>IDCHG</td><td>ID输入的值有变化</td></tr><tr><td>19</td><td>DF</td><td>去抖动完成当设备连接去抖动完成时,USBHS置位该控制位注意:仅在主机模式下可访问</td></tr><tr><td>18</td><td>ADTO</td><td>A设备超时当A设备等待B设备连接发生超时,USBHS置位该控制位注意:在设备和主机模式下,均可访问</td></tr><tr><td>17</td><td>HNPDET</td><td>检测到主机协商请求当A设备检测到一个HNP请求时,USBHS置位该标志位注意:在设备和主机模式下,均可访问</td></tr><tr><td>16:10</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>9</td><td>HNPEND</td><td>HNP结束当一个HNP结束时,内核置位该标志位。软件应该读取USBHS_GOTGCS寄存器中HNPS标志位,以获取HNP结果。注意:在设备和主机模式下,均可访问。</td></tr><tr><td>8</td><td>SRPEND</td><td>SRPEND当一个SRP结束时,内核置位该标志位。软件应该读取USBHS_GOTGCS寄存器中SRPS标志位,以获取SRP结果。注意:在设备和主机模式下,均可访问。</td></tr><tr><td>7:3</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>2</td><td>SESEND</td><td>会话结束当VBUS电压低于Vb_ses_vld时,内核置位该标志位。</td></tr><tr><td>1:0</td><td>保留</td><td>必须保留复位值。</td></tr></table>
+
+# 全局 AHB 控制和状态寄存器（USBHS_GAHBCS）
+
+地址偏移：0x0008
+
+复位值：0x0000 0000
+
+该寄存器只能按字（32位）访问
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td colspan="16">保留</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td colspan="7">保留</td><td>PTXFTH</td><td>TXFTH</td><td>保留</td><td>DMAEN</td><td colspan="4">BURST[3:0]</td><td>GINTEN</td></tr><tr><td colspan="7"></td><td>rw</td><td>rw</td><td></td><td>rw</td><td></td><td>rw</td><td colspan="2"></td><td>rw</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:9</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>8</td><td>PTXFTH</td><td>周期性Tx FIFO阈值0:当周期性发送FIFO半空时,将触发PTXFEIF标志位1:当周期性发送FIFO全空时,将触发PTXFEIF标志位注意:只在主机模式下访问</td></tr><tr><td>7</td><td>TXFTH</td><td>Tx FIFO阈值设备模式:0:当IN端点发送FIFO半空时,将触发TXFEIF标志位1:当IN端点发送FIFO全空时,将触发TXFEIF标志位主机模式:0:当非周期性发送FIFO半空时,将触发NPTXFEIF标志位1:当非周期性发送FIFO全空时,将触发NPTXFEIF标志位</td></tr><tr><td>6</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>5</td><td>DMAEN</td><td>DMA功能使能0:DMA功能禁用1:DMA功能使能</td></tr><tr><td>4:1</td><td>BURST[3:0]</td><td>DMA使用的AHB突发类型0000:单次0001:INCR0011:INCR40101:INCR80111:INCR16</td></tr><tr><td>0</td><td>GINTEN</td><td>全局中断使能</td></tr></table>
+
+0：全局中断不使能
+
+1：全局中断使能
+
+注意：在主机和设备模式下，均可访问
+
+# 全局 USB 控制和状态寄存器（USBHS_GUSBCS）
+
+地址偏移：0x000C
+
+复位值：0x0000 1400
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td>保留</td><td>FDM</td><td>FHM</td><td colspan="7">保留</td><td>ULPIEOI</td><td>ULPIEVD</td><td colspan="4">保留</td></tr><tr><td></td><td>rw</td><td>rw</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>rw</td><td>rw</td><td></td><td></td><td></td><td></td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td colspan="2">保留</td><td colspan="4">UTT[3:0]</td><td>HNPCEN</td><td>SRPCEN</td><td>保留</td><td>EMBPHY_FS</td><td>EMBPHY_HS</td><td>HS_CUR_FE</td><td>保留</td><td colspan="3">TOC[2:0]</td></tr><tr><td colspan="2"></td><td colspan="4">rw</td><td>r/rw</td><td>r/rw</td><td></td><td>rw</td><td>rw</td><td>rw</td><td></td><td colspan="3">rw</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>30</td><td>FDM</td><td>强制设备模式通过置位该控制位,可强制USB内核为设备模式,并且忽略USBHS ID引脚的输入状态0:正常模式1:设备模式设置该控制位后,应用必须等待至少25ms,让变化产生作用。注意:在设备和主机模式下,均可访问。</td></tr><tr><td>29</td><td>FHM</td><td>强制主机模式通过置位该控制位,可强制USB内核为主机模式,并且忽略USBHS ID引脚的输入状态0:正常模式1:主机模式设置该控制位后,应用必须等待至少25ms,让变化产生作用。注意:在设备和主机模式下,均可访问</td></tr><tr><td>28:22</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>21</td><td>ULPIEOI</td><td>ULPI外部过流指示器ULPI PHY使用该控制位决定使用内部或者外部过流指示器。该控制位只在外部ULPI PHY被使用时(本寄存器中EMBPHY_HS和EMBPHY_FS控制位为0),才有效。0: ULPI PHY使用内部过流指示器1: ULPI PHY使用外部过流指示器</td></tr><tr><td>20</td><td>ULPIEVD</td><td>ULPI外部VBUS驱动器ULPI PHY使用该控制位决定是由ULPI PHY还是外部电源驱动。该控制位仅在外部ULPI PHY被使用时(本寄存器中EMBPHY_HS和EMBPHY_FS控制位为0),才有效。0: VBUS由ULPI PHY驱动1: VBUS由外部电源驱动</td></tr><tr><td>19:14</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>13:10</td><td>UTT[3:0]</td><td>USB运转时间以物理时钟数来设定运转时间注意:仅在设备模式下访问</td></tr><tr><td>9</td><td>HNPCEN</td><td>HNP能力使能控制HNP能力是否使能0: HNP能力禁用1: HNP能力使能注意:在设备和主机模式下,均可访问</td></tr><tr><td>8</td><td>SRPCEN</td><td>SRP能力使能控制SRP能力是否使能0: SRP能力禁用1: SRP能力使能注意:在设备和主机模式下,均可访问</td></tr><tr><td>7</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>6</td><td>EMBPHY_FS</td><td>嵌入式全速PHY选择0: 嵌入式全速PHY禁用1: 嵌入式全速PHY使能注意:该位仅在EMBPHY_HS为0时才能置1,在设备和主机模式下,均可访问</td></tr><tr><td>5</td><td>EMBPHY_HS</td><td>嵌入式高速PHY选择0: 嵌入式高速PHY禁用1: 嵌入式高速PHY使能注意:该位仅在EMBPHY_FS为0时才能置1,在设备和主机模式下,均可访问</td></tr><tr><td>4</td><td>HS_CUR_FE</td><td>HS当前软件使能0: 释放HS模式,TX当前使能1: 强制HS模式,TX当前使能</td></tr><tr><td>3</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>2:0</td><td>TOC[2:0]</td><td>超时校准当等待一个包时,USBHS需要使用USB2.0协议中需要的超时数值。应用可以使用TOC[2:0]增加该数值(以PHY时钟为单位)。PHY时钟频率由使用的PHY所决定:</td></tr></table>
+
+48MHz（内部嵌入式PHY）和60MHz（外部ULPI PHY）。
+
+# 全局复位控制寄存器（USBHS_GRSTCTL）
+
+地址偏移：0x0010
+
+复位值：0x8000 0000
+
+应用通过该寄存器来复位内核的不同硬件特性。
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td>DMAIDL</td><td>DMABSY</td><td colspan="14">保留</td></tr><tr><td>r</td><td>r</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td colspan="5">保留</td><td colspan="5">TXFNUM[4:0]</td><td>TXFF</td><td>RXFF</td><td>保留</td><td>HFCRST</td><td>HCSRST</td><td>CSRST</td></tr><tr><td colspan="5"></td><td colspan="5">rw</td><td>rs</td><td>rs</td><td></td><td>rs</td><td>rs</td><td>rs</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31</td><td>DMAIDL</td><td>DMA空闲状态该标志位体现了DMA是否在空闲状态0: DMA在空闲状态1: DMA不在空闲状态注意: 在设备和主机模式下,均可访问</td></tr><tr><td>30</td><td>DMABSY</td><td>DMA忙标志位该标志位体现了DMA是否忙0: DMA不忙1: DMA忙注意: 在设备和主机模式下,均可访问</td></tr><tr><td>29:11</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>10:6</td><td>TXFNUM[4:0]</td><td>Tx FIFO数目当本寄存器中TXFF控制位置位时,该标志位决定那个Tx FIFO会被冲刷主机模式:00000: 仅非周期性Tx FIFO被冲刷00001: 仅周期性Tx FIFO被冲刷1xxxx: 周期性和非周期性Tx FIFO均被冲刷其他: 没有数据被冲刷设备模式:00000: 仅Tx FIFO被冲刷00001:仅Tx FIFO1被冲刷...00111:仅Tx FIFO7被冲刷1XXXX:所有的Tx FIFO均被冲刷其他:没有数据被冲刷</td></tr><tr><td>5</td><td>TXFF</td><td>Tx FIFO冲刷控制位应用通过置位该控制位来冲刷Tx FIFO数据,并且TXFNUM[4:0]决定冲刷的FIFO数目。当冲刷完成后,硬件自动清除该控制位。置位该控制位后,应用应该等待该控制位清除,并且,在此之前USBHS不应有其他操作。注意:在设备和主机模式下,均可访问</td></tr><tr><td>4</td><td>RXFF</td><td>Rx FIFO冲刷控制位应用通过置位该控制位来冲刷Rx FIFO数据。当冲刷完成后,硬件自动清除该控制位。置位该控制位后,应用应该等待该控制位清除,并且,在此之前USBHS不应有其他操作。注意:在设备和主机模式下,均可访问</td></tr><tr><td>3</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>2</td><td>HFCRST</td><td>主机帧计数器复位应用通过置位该控制位来复位USBHS内的帧计数器。该控制位置位后,接下来SOF的帧计数器将变为0。当复位操作完成后,硬件自动清除该控制位。置位该控制位后,应用应该等待该控制位清除,并且,在此之前USBHS不应有其他操作。注意:仅在主机模式下访问</td></tr><tr><td>1</td><td>HCSRST</td><td>HCLK软件复位应用通过置位该控制位来复位ABH时钟域电路在复位操作完成后,硬件自动清除该控制位。置位该控制位后,应用应该等待该控制位清除,并且,在此之前USBHS不应有其他操作。注意:在设备和主机模式下,均可访问</td></tr><tr><td>0</td><td>CSRST</td><td>USB内核软件复位复位AHB和USB时钟域电路,以及大多数的寄存器。</td></tr></table>
+
+# 全局中断标志寄存器（USBHS_GINTF）
+
+地址偏移：0x0014
+
+复位值：0x0400 0021
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td>WKUPIF</td><td>SESIF</td><td>DISCIF</td><td>IDPSC</td><td>LPMIF</td><td>PTXFEIF</td><td>HCIF</td><td>HPIF</td><td colspan="2">保留</td><td>PXNCIF/ISOONCIF</td><td>ISOINCIF</td><td>OEPIF</td><td>IEPIF</td><td colspan="2">保留</td></tr><tr><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>r</td><td>r</td><td>r</td><td></td><td></td><td>rc_w1</td><td>rc_w1</td><td>r</td><td>r</td><td></td><td></td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></table>
+
+<table><tr><td>EOPFIF</td><td>ISOOPDIF</td><td>ENUMF</td><td>RST</td><td>SP</td><td>ESP</td><td>保留</td><td>GONAK</td><td>GNPINAK</td><td>NPTXFEIF</td><td>RXFNEIF</td><td>SOF</td><td>OTGIF</td><td>MFIF</td><td>COPM</td></tr><tr><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td></td><td>r</td><td>r</td><td>r</td><td>r</td><td>rc_w1</td><td>r</td><td>rc_w1</td><td>r</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31</td><td>WKUPIF</td><td>唤醒中断标志位当在USB总线上检测到一个恢复信号(在设备模式下)或者一个远程唤醒信号(在主机模式下),硬件将置位该中断标志位。注意:在设备和主机模式下,均可访问</td></tr><tr><td>30</td><td>SESIF</td><td>会话中断标志位当在A设备模式下检测到一个SRP会话请求或在B设备模式下B设备的Vbus变为可用时,硬件将置位该中断标志位注意:在设备和主机模式下,均可访问</td></tr><tr><td>29</td><td>DISCIF</td><td>断开中断标志位当设备断开后,将触发该标志位。注意:仅在主机模式下访问</td></tr><tr><td>28</td><td>IDPSC</td><td>ID引脚状态改变中断标志位当ID引脚状态改变时,内核将置位该标志位注意:在设备和主机模式下,均可访问</td></tr><tr><td>27</td><td>LPMIF</td><td>LPM中断标志位在主机模式下,当设备以ACK、NYET或STALL响应LPM事务,或者主机已经发送了RECNT(USBHS_LPMCFG寄存器)次LPM事务,中断会被触发在从机模式下,当设备已经接收到LPM事务并且以ACK、NYET或STALL进行了响应,中断会被触发</td></tr><tr><td>26</td><td>PTXFEIF</td><td>周期性Tx FIFO空中断标志位当周期性发送FIFO半空或全空时,将触发该标志位。空阈值由USBHS_GAHBCS寄存器中周期性Tx FIFO空等级控制位(PTXFTH)决定。注意:仅在主机模式下访问</td></tr><tr><td>25</td><td>HCIF</td><td>主机通道中断标志位当在主机模式下其中一个通道挂起一个中断时,USBHS将置位该标志位。软件应该首先读取USBHS_HACHINT寄存器以获取通道号,然后读取相应的USBHS_HCHxINTF寄存器以获取产生中断的通道标志位。当产生通道中断的独立通道标志位被清除后,该中断标志位将自动清除。注意:仅在主机模式下访问</td></tr><tr><td>24</td><td>HPIF</td><td>主机端口中断标志位当USBHS在主机模式下检测到端口状态改变时,USB内核将置位该标志位。软件应该读取USBHS_HPCSR寄存器以获取该中断源。当产生端口中断的标志被清除后,该中断标志位将自动清除。注意:仅在主机模式下访问</td></tr><tr><td>23:22</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td rowspan="2">21</td><td>PXNCIF</td><td>周期性传输未完成中断标志位在当前帧内,当帧结束时,周期性传输未完成,USBHS将置位该标志位(主机模式)。</td></tr><tr><td>ISOONCIF</td><td>同步OUT传输未完成中断标志位在周期性帧结束时(由USBHS_DCFG寄存器的EOPFT控制位定义),如果仍有同步OUT端点未完成传输,USBHS将置位该标志位(设备模式)。</td></tr><tr><td>20</td><td>ISOINCIF</td><td>同步IN传输未完成中断标志位在周期性帧结束时(由USBHS_DCFG寄存器的EOPFT控制位定义),如果仍有同步IN端点未完成传输,USBHS将置位该标志位(设备模式)。注意:仅在设备模式下访问</td></tr><tr><td>19</td><td>OEPIF</td><td>OUT端点中断标志位当在设备模式下,其中一个OUT端点挂起一个中断时,USBHS将置位该中断标志位。软件应该首先读取USBHS_DAEPINT寄存器以获取设备号,然后读取相应的USBHS_DOEPxINTF寄存器以获取产生中断的端点标志位。当产生中断的相应端点标志位被清除后,该中断标志位被自动清除。注意:仅在设备模式下访问</td></tr><tr><td>18</td><td>IEPIF</td><td>IN端点中断标志位当在设备模式下,其中一个IN端点挂起一个中断时,USBHS将置位该标志位。软件应该首先读取USBHS_DAEPINT寄存器以获取设备号,然后读取相应的USBHS_DIEPxINTF寄存器以获取产生中断的端点标志位。当相应产生中断的端点标志位被清除后,该中断标志位被自动清除。</td></tr><tr><td>17:16</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>15</td><td>EOPFIF</td><td>周期性帧结束中断标志位当一帧内USB总线时间已经达到USBHS_DCFG寄存器中EOPFT控制位所定义的数值时,USBHS将置位该中断标志位。注意:仅在设备模式下访问</td></tr><tr><td>14</td><td>ISOOPDIF</td><td>同步OUT包丢失中断标志位如果USBHS接收到一个同步OUT包,但是Rx FIFO没有足够的空间来接收该OUT包,USBHS将置位该标志位。注意:仅在设备模式下访问</td></tr><tr><td>13</td><td>ENUMF</td><td>枚举完成中断标志位在速度枚举完成后,USBHS将置位该中断标志位。软件能够读取USBHS_DSTAT寄存器以获取当前设备速度。注意:仅在设备模式下访问</td></tr><tr><td>12</td><td>RST</td><td>USB复位中断标志位当USBHS在USB总线上检测到一个USB复位信号后,USBHS将置位该中断标志位。注意:仅在设备模式下访问</td></tr><tr><td>11</td><td>SP</td><td>USB挂起中断标志位当USBHS检测到USB总线空闲3ms并且进入挂起状态,USBHS将置位该中断标志位。注意:仅在设备模式下访问</td></tr><tr><td>10</td><td>ESP</td><td>早期挂起中断标志位当USBHS检测到USB总线空闲3ms时,USBHS将置位该中断标志位。</td></tr><tr><td>9:8</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>7</td><td>GONAK</td><td>全局OUT NAK有效标志位软件能够向USBHS_DCTL寄存器的SGONAK控制位写1,并且USBHS将会在SGONAK写入有效后,置位GONAK标志位。软件可通过向USBHS_DCTL寄存器的CGONAK控制位写1,清除该标志位注意:仅在设备模式下可访问</td></tr><tr><td>6</td><td>GNPINAK</td><td>全局非周期性IN NAK有效标志位软件能够向USBHS_DCTL寄存器中的SGINAK控制位写1,并且USBHS将会在SGINAK写入有效后,置位GNPINAK标志位。软件可通过向USBHS_DCTL寄存器的CGINAK控制位写1,清除该标志位注意:仅在设备模式下可访问</td></tr><tr><td>5</td><td>NPTXFEIF</td><td>非周期性Tx FIFO空中断标志位当非周期性Tx FIFO为半空或全空时,将置位该中断标志位。该阈值由USBHS_GAHBCS寄存器中的非周期Tx FIFO空等级控制位(TXFTH)决定。注意:仅在主机模式下访问</td></tr><tr><td>4</td><td>RXFNEIF</td><td>Rx FIFO非空中断标志位当至少有一个包或状态条目在Rx FIFO中时,USBHS将置位该标志位。注意:在主机和设备模式下,均可访问</td></tr><tr><td>3</td><td>SOF</td><td>帧起始中断标志位主机模式:当准备在USB总线上发送一个SOF或保持有效信号,USBHS将置位该中断标志位。软件可以通过写1清除该中断标志位。设备模式:当USBHS接收到一个SOF令牌包后,USBHS置位该标志位。应用可以读取设备状态寄存器以获取当前帧号。软件可以通过写1清除该中断标志位。注意:在设备和主机模式下,均可访问</td></tr><tr><td>2</td><td>OTGIF</td><td>OTG中断标志位当USBHS_GOTGINTF寄存器中标志位产生一个中断时,USBHS置位该中断标志位。软件应该读取USBHS_GOTGINTF寄存器以获取产生该中断的信号源,当USBHS_GOTGINTF寄存器中产生该中断的标志位被清除后,该中断标志位也被自动清除。注意:在设备和主机模式下,均可访问</td></tr><tr><td>1</td><td>MFIF</td><td>模式错误中断标志位如果软件在设备模式下操作仅主机可访问的寄存器或者在主机模式下操作仅设备可访问的寄存器,USBHS将置位该中断标志位。这些错误操作不会产生作用。注意:在主机和设备模式下,均可访问</td></tr><tr><td>0</td><td>COPM</td><td>当前操作模式0:设备模式1:主机模式注意:在主机和设备模式下,均可访问</td></tr></table>
+
+# 全局中断使能寄存器（USBHS_GINTEN）
+
+地址偏移：0x0018
+
+复位值：0x0000 0000
+
+这个寄存器同全局中断标志寄存器（USBHS_GINTF）一起工作来中断应用程序。当中断使能位被禁止后，相应的中断就不会产生。然而，相应的全局中断标志位依然会被置位。
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td>WKUPIE</td><td>SESIE</td><td>DISCIE</td><td>IDPSCIE</td><td>LPMIE</td><td>PTXFEIE</td><td>HCIE</td><td>HPIE</td><td colspan="2">保留</td><td>PXNCIE/ ISOONCIE</td><td>ISOINCIE</td><td>OEPIE</td><td>IEPIE</td><td colspan="2">保留</td></tr><tr><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>r</td><td colspan="2"></td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td colspan="2"></td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>EOPFIE</td><td>ISOOPDIE</td><td>ENUMFIE</td><td>RSTIE</td><td>SPIE</td><td>ESPIE</td><td colspan="2">保留</td><td>GONAKIE</td><td>GNPINAKIE</td><td>NPTXFEIE</td><td>RXFNEIE</td><td>SOFIE</td><td>OTGIE</td><td>MFIE</td><td>保留</td></tr><tr><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td colspan="2"></td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td></td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31</td><td>WKUPIE</td><td>唤醒中断使能0:禁用唤醒中断1:使能唤醒中断注意:在主机和设备模式下,均可访问</td></tr><tr><td>30</td><td>SESIE</td><td>会话中断使能0:禁用会话中断1:使能会话中断注意:在主机和设备模式下,均可访问</td></tr><tr><td>29</td><td>DISCIE</td><td>断开中断使能0:禁用断开中断1:使能断开中断</td></tr></table>
+
+注意：仅在设备模式下使用
+
+28 IDPSCIE ID引脚状态改变中断使能
+
+0：禁用连接器ID引脚状态中断
+
+1：使能连接器ID引脚状态中断
+
+注意：在主机和设备模式下，均可访问
+
+27 LPMIE LPM中断使能
+
+0：禁用LPM中断
+
+1：使能LPM中断
+
+注意：在主机和设备模式下，均可访问
+
+26 PTXFEIE 周期性Tx FIFO空中断使能
+
+0：禁用周期性Tx FIFO空中断
+
+1：使能周期性Tx FIFO空中断
+
+注意：仅在主机模式下访问
+
+25 HCIE 主机通道中断使能
+
+0：禁用主机通道中断
+
+1：使能主机通道中断
+
+注意：仅在主机模式下访问
+
+24 HPIE 主机端口中断使能
+
+0：禁止主机端口中断
+
+1：使能主机端口中断
+
+注意：仅在主机模式下访问
+
+23:22 保留 必须保持复位值。
+
+21 PXNCIE 周期性传输未完成中断使能
+
+0：禁止周期性未完成传输中断
+
+1：使能周期性未完成传输中断
+
+注意：仅在主机模式下访问
+
+ISOONCIE 同步OUT传输未完成中断使能
+
+0：禁止同步OUT传输未完成中断
+
+1：使能同步OUT传输未完成中断
+
+注意：仅在设备模式下访问
+
+20 ISOINCIE 同步IN传输未完成中断使能
+
+0：禁止同步IN传输未完成中断
+
+1：使能同步IN传输未完成中断
+
+注意：仅在设备模式下访问
+
+19 OEPIE OUT端点中断使能
+
+0：禁止OUT端点中断
+
+1：使能OUT端点中断
+
+注意：仅在设备模式下访问
+
+18 IEPIE IN端点中断使能
+
+0：禁止IN端点中断
+
+1：使能IN端点中断
+
+注意：仅在设备模式下访问
+
+17:16 保留 必须保持复位值。
+
+15 EOPFIE 周期性帧结束中断使能
+
+0：禁止周期性帧结束中断
+
+1：使能周期性帧结束中断
+
+注意：仅在设备模式下访问
+
+14 ISOOPDIE 同步OUT包丢失中断使能
+
+$0 { : }$ ：禁止同步OUT包丢失中断
+
+1：使能同步OUT包丢失中断
+
+注意：仅在设备模式下访问
+
+13 ENUMFIE 枚举完成中断使能
+
+0：禁止枚举完成中断
+
+1：使能枚举完成中断
+
+注意：仅在设备模式下访问
+
+12 RSTIE USB复位中断使能
+
+0：禁止USB复位中断
+
+1：使能USB复位中断
+
+注意：仅在设备模式下访问
+
+11 SPIE USB挂起中断使能
+
+0：禁止USB挂起中断
+
+1：使能USB挂起中断
+
+注意：仅在设备模式下访问
+
+10 ESPIE 早期挂起中断使能
+
+0：禁止早期挂起中断
+
+1：使能早期挂起中断
+
+注意：仅在设备模式下访问
+
+9:8 保留 必须保持复位值。
+
+7 GONAKIE 全局OUT NAK有效中断使能
+
+0：禁止全局OUT NAK有效中断
+
+1：使能全局OUT NAK有效中断
+
+注意：仅在设备模式下访问
+
+6 GNPINAKIE 全局非周期性IN NAK有效中断使能
+
+0：禁止全局非周期性IN NAK有效中断
+
+1：使能全局非周期性IN NAK有效中断
+
+注意：仅在设备模式下访问
+
+5 NPTXFEIE 非周期性发送FIFO空中断使能
+
+0：禁止非周期性发送FIFO空中断
+
+1：使能非周期性发送FIFO空中断
+
+注意：仅在主机模式下访问
+
+<table><tr><td>4</td><td>RXFNEIE</td><td>接收FIFO非空中断使能0:禁止接收FIFO非空中断1:使能接收FIFO非空中断注意:在设备模式与主机模式下,均可访问</td></tr><tr><td>3</td><td>SOFIE</td><td>帧首中断使能0:禁止帧首中断1:使能帧首中断注意:在设备模式下与主机模式下,均可访问</td></tr><tr><td>2</td><td>OTGIE</td><td>OTG中断使能0:禁止OTG中断1:使能OTG中断注意:在设备模式下与主机模式下,均可访问</td></tr><tr><td>1</td><td>MFIE</td><td>模式错误中断使能0:禁止模式错误中断1:使能模式错误中断注意:在设备模式下与主机模式下,均可访问</td></tr><tr><td>0</td><td>保留</td><td>必须保持复位值。</td></tr></table>
+
+# 全 局 接 收 状 态 读 取 / 接 收 状 态 读 取 和 弹 出 寄 存 器（USBHS_GRSTATR/USBHS_GRSTATP）
+
+读地址偏移：0x001C
+
+弹出地址偏移：0x0020
+
+复位值：0x0000 0000
+
+对接收状态读寄存器的读操作，将返回接收FIFO中顶部的条目。对接收状态读取和弹出寄存器的读操作，将额外的弹出Rx FIFO的顶部条目。
+
+在主机模式和设备模式下，Rx FIFO中的条目具有不同的含义。当全局中断标志寄存器（USBHS_GINTF）中的接收FIFO非空中断标志位（RXFNEIF）置位后，软件应该读取该寄存器。
+
+该寄存器只能按字(32位)访问
+
+
+主机模式：
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td colspan="11">保留</td><td colspan="4">RPOKST[3.0]</td><td>DPID[1]</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></table>
+
+<table><tr><td>DPID[0]</td><td>BCOUNT[10:0]</td><td>CNUM[3:0]</td></tr><tr><td>r</td><td>r</td><td>r</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:21</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>20:17</td><td>RPCKST[3:0]</td><td>接收包状态0010:接收到IN数据包0011:IN传输完成(如果取出,触发一个中断)0101:数据翻转错误(如果取出,触发一个中断)0111:通道中止(如果取出,触发一个中断)其他:保留</td></tr><tr><td>16:15</td><td>DPID[1:0]</td><td>数据PID接收包的数据PID00:DATA010:DATA101:DATA211:MDATA</td></tr><tr><td>14:4</td><td>BCOUNT[10:0]</td><td>字节数接收IN数据包字节数。</td></tr><tr><td>3:0</td><td>CNUM[3:0]</td><td>通道数当前接收包所属通道编号。</td></tr></table>
+
+
+设备模式：
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td colspan="11">保留</td><td colspan="4">RPCKST[3:0]</td><td>DPID[1]</td></tr><tr><td colspan="15">r</td><td>r</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>DPID[0]</td><td colspan="11">BCOUNT[10:0]</td><td colspan="4">EPNUM[3:0]</td></tr><tr><td colspan="6">r</td><td colspan="6">r</td><td colspan="4">r</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:21</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>20:17</td><td>RPCKST[3:0]</td><td>接收包状态0001:全局OUT NAK(产生一个中断)</td></tr></table>
+
+0010：接收到OUT数据包
+
+0011：OUT传输完成（产生一个中断）
+
+0100：SETUP传输完成（产生一个中断）
+
+0110：接收到SETUP数据包
+
+其他：保留
+
+16:15 DPID[1:0] 数据PID
+
+接收到OUT数据包的数据PID
+
+00：DATA0 
+
+10：DATA1 
+
+01：DATA2 
+
+11：MDATA 
+
+14:4 BCOUNT[10:0] 字节数
+
+接收数据包的字节数
+
+3:0 EPNUM[3:0] 端点号
+
+当前接收包所属端点编号
+
+# 全局接收 FIFO 长度寄存器（USBHS_GRFLEN）
+
+地址偏移：0x0024
+
+复位值：0x0000 0200
+
+该寄存器只能按字（32位）访问
+
+![image](images/bf79dcd5867d.jpg)
+
+
+
+位/位域 名称 描述
+
+
+<table><tr><td>31:16</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>15:0</td><td>RXFD[15:0]</td><td>Rx FIFO 深度以32位字计数<eq>1 \leq RXFD \leq 1024</eq></td></tr></table>
+
+# 主机非周期性发送 FIFO 长度寄存器/设备 IN 端点 0 发送 FIFO 长度寄存器（USBHS_HNPTFLEN/USBHS_DIEP0TFLEN）
+
+地址偏移：0x0028
+
+复位值：0x0200 0200
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>IEPOTXF[15:0]</td><td>HNPTXFD/</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td colspan="9">r/rw</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>IEPOTXRSAR[15:0]</td><td>HNPTXRSAR/</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+
+r/rw 
+
+
+主机模式下：
+
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:16</td><td>HNPTXFD[15:0]</td><td>主机非周期性Tx FIFO深度以32位字计数<eq>1 \leq \text{HNPTXFD} \leq 1024</eq></td></tr><tr><td>15:0</td><td>HNPTXRSAR[15:0]</td><td>主机非周期性Tx RAM起始地址非周期性发送FIFO RAM的起始地址</td></tr></table>
+
+
+设备模式下：
+
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:16</td><td>IEP0TXFD[15:0]</td><td>输入端点0 Tx FIFO深度以32位字计数<eq>16 \leq</eq>IEP0TXFD<eq>\leq 140</eq></td></tr><tr><td>15:0</td><td>IEP0TXRSAR[15:0]</td><td>输入端点0 TX RAM起始地址端点0发送FIFO RAM的起始地址</td></tr></table>
+
+# 主机非周期性发送 FIFO/队列状态寄存器（USBHS_HNPTFQSTAT）
+
+地址偏移：0x002C
+
+复位值：0x0008 0200
+
+该寄存器只能按字（32位）访问
+
+该寄存器反映了非周期性Tx FIFO和请求队列的当前状态。
+
+请求队列包括在主机模式下的IN、OUT或其他请求条目。
+
+注意：在设备模式下，该寄存器不可用。
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td>保留</td><td></td><td></td><td></td><td>NPTXRQTOP[6:]</td><td></td><td></td><td></td><td></td><td></td><td></td><td>NPTXRQS[7:0]</td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td>r</td><td></td><td></td><td></td><td></td><td></td><td></td><td>r</td><td></td><td></td><td></td><td></td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>30:24</td><td>NPTXRQTOP[6:0]</td><td>非周期性发送请求队列的顶部条目在非周期性传输请求队列中的条目。位30:27:通道号位26:25:-00:IN/OUT令牌-01:0长度OUT包-11:通道中止请求位24:结束标志位,表明所选通道的最后一个条目</td></tr><tr><td>23:16</td><td>NPTXRQS[7:0]</td><td>非周期性发送请求队列空间非周期性请求队列的剩余空间0:请求队列空1:1个条目2:2个条目...n:n个条目(0≤n≤8)其他:保留</td></tr><tr><td>15:0</td><td>NPTXFS[15:0]</td><td>非周期性Tx FIFO空间非周期性发送FIFO剩余空间以32位字计数0:非周期性Tx FIFO为空1:1个字2:2个字...n:n个字(0≤n≤NPTXFD)其他:保留</td></tr></table>
+
+全局内核配置寄存器（USBHS_GCCFG）
+
+地址偏移：0x0038
+
+复位值：0x0000 0000
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td></td><td>保留</td><td></td><td></td><td></td><td></td><td></td><td>VDEN</td><td>SOFOEN</td><td>保留</td><td></td><td></td><td>PWRON</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>rw</td><td>rw</td><td></td><td></td><td></td><td>rw</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>SDMEN</td><td>PDMEN</td><td>DCDMEN</td><td>BCDEN</td><td colspan="8">保留</td><td>PS2F</td><td>SDF</td><td>PDF</td><td>DCDF</td></tr><tr><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>r</td><td>r</td><td>r</td><td>r</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:22</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>21</td><td>VDEN</td><td>启用VBUS感应比较器检测VBUS有效。如果支持HNP或SRP,则自动启用VBUS比较器。0:禁用VBUS检测1:使能VBUS检测</td></tr><tr><td>20</td><td>SOFOEN</td><td>SOF输出使能0:SOF脉冲输出禁止1:SOF脉冲输出使能</td></tr><tr><td>19:17</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>16</td><td>PWRON</td><td>上电该控制位为内部嵌入式全速PHY的电源开关0:嵌入式全速PHY掉电1:嵌入式全速PHY上电</td></tr><tr><td>15</td><td>SDMEN</td><td>二次检测模式使能0:二次检测模式禁止1:二次检测模式使能</td></tr><tr><td>14</td><td>PDMEN</td><td>主检测模式使能0:主检测模式禁止1:主检测模式使能</td></tr><tr><td>13</td><td>DCDMEN</td><td>数据连接检测模式使能0:数据连接检测模式禁止1:数据连接检测模式使能</td></tr><tr><td>12</td><td>BCDEN</td><td>电池充电检测使能</td></tr></table>
+
+0：电池充电检测禁止
+
+1：电池充电检测使能
+
+11:4 保留 必须保持复位值。
+
+3 PS2F PS2检测状态，仅在主检测模式下激活
+
+0：检测到普通端口
+
+1：检测到PS2端口
+
+2 SDF 二次检测状态
+
+0：检测到CDP
+
+1：检测到DCP
+
+1 PDF 主检测状态 主检测状态
+
+0：检测到BCD支持
+
+1：检测到BCD支持
+
+0 DCDF 数据连接检测状态
+
+0：未检测到数据线连接
+
+1：检测到数据线连接
+
+# 内核 ID 寄存器（USBHS_CID）
+
+地址偏移：0x003C
+
+复位值：0x0000 1000
+
+该寄存器包含产品ID
+
+该寄存器只能按字（32位）访问
+
+![image](images/d736d7ed0306.jpg)
+
+
+CID[31:16] 
+
+rw 
+
+CID[15:0] 
+
+rw 
+
+位/位域 名称 描述
+
+31:0 CID[31:0] 内核ID
+
+软件能够写入或读取该域值，并利用该域值为应用产生一个唯一ID。
+
+# 全局内核 LPM 配置寄存器（USBHS_GLPMCFG）
+
+地址偏移：0x0054
+
+复位值：0x0000 0000
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td colspan="3">保留</td><td>BESLEN</td><td colspan="3">LPMRC[2:0]</td><td>LMSND</td><td colspan="3">LPMRC[2:0]</td><td colspan="3">LPMCH[3:0]</td><td colspan="2">RSOK</td></tr><tr><td colspan="3"></td><td>rw</td><td colspan="3">r</td><td>rs</td><td colspan="3">rw</td><td colspan="3">rw</td><td colspan="2">r</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>LPSLPS</td><td colspan="2">LPMRSP[1:0]</td><td>DSEN</td><td colspan="4">BESLTH[3:0]</td><td>SSEN</td><td>REW</td><td colspan="4">BESL[3:0]</td><td>ACKLPM</td><td>LPMEN</td></tr><tr><td>r</td><td colspan="2">r</td><td>rw</td><td colspan="4">rw</td><td>rw</td><td>rw/r</td><td colspan="4">rw/r</td><td>rw</td><td>rw</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:29</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>28</td><td>BESLEN</td><td>使能 LPM 勘误表选项0:选择 USB2.0 规范的链路电源管理附录工程变更通知1:选择 USB2.0 规范的链路电源管理工程变更通知的勘误表</td></tr><tr><td>27:25</td><td>LPMRCS[2:0]</td><td>LPM 重试计数状态注意:仅在主机模式下访问</td></tr><tr><td>24</td><td>LPMSND</td><td>发送 LPM 事务当收到 ACK、STALL 或 NYET 响应,或者 LPM 发送次数达到重试计数,由硬件清除该位注意:仅在主机模式下访问</td></tr><tr><td>23:21</td><td>LPMRC[2:0]</td><td>LPM 重试计数接收到错误响应时的重试计数,直到接收到 ACK、STALL 或 NYET 响应注意:仅在主机模式下访问</td></tr><tr><td>20:17</td><td>LPMCHI[3:0]</td><td>发送 LPM 事务时的通道号索引注意:仅在主机模式下访问</td></tr><tr><td>16</td><td>RSOK</td><td>睡眠状态可以发送唤醒信号主机或设备可以在进入睡眠状态 50us 后发送唤醒(TI1Residency)当 LPMSLPS 为 0 时该位为 01:睡眠状态可以启动唤醒0:睡眠状态不能启动唤醒</td></tr><tr><td>15</td><td>LPMSLPS</td><td>睡眠状态主机模式:主机在接收到ACK响应后转换到睡眠状态。从机模式:发送ACK响应后,设备进入睡眠状态,TL1令牌重发计时器已过期。1:内核在睡眠状态0:内核不在睡眠状态</td></tr><tr><td>14:13</td><td>LPMRSP[1:0]</td><td>LPM响应11:ACK10:NYET01:STALL00:ERROR(没有响应)</td></tr><tr><td>12</td><td>DSEN</td><td>深度睡眠使能使能在深度睡眠模式下挂起PHY</td></tr><tr><td>11:8</td><td>BESLTH[3:0]</td><td>BESL阈值设备模式:当BESL大于或等于BESLTH值时,设备进入深低功耗模式。主机模式:BESLTH表示当检测到设备初始化的恢复时,恢复信号(TL1HubDrvResume2)的持续时间。0000:75us0001:100us0010:150us0011:250us0101:450us0110:950us</td></tr><tr><td>7</td><td>SSEN</td><td>浅睡眠下使能在浅睡眠模式下使能挂起PHY</td></tr><tr><td>6</td><td>REW</td><td>b-远程唤醒值主机模式:LPM事务中发送的远程唤醒值设备模式(只读):当ACK、STALL或NYET已经发送,用接收到的LPM事务中的b-远程唤醒值更新</td></tr><tr><td>5:2</td><td>BESL[3:0]</td><td>最大限度的服务延迟主机模式:要在LPM事务中发送的BESL值。这也是主机初始化resume时resume(TL1HubDrvResume1)的持续时间。设备模式:当ACK、STALL或NYET已经发送,用接收到的LPM事务中的BESL值更新0000:125us0001:150us</td></tr></table>
+
+0010：200us 
+
+0011：300us 
+
+0100：400us 
+
+0101：500us 
+
+0110：1000us 
+
+0111：2000us 
+
+1000：3000us 
+
+1001：4000us 
+
+1010：5000us 
+
+1011：6000us 
+
+1100：7000us 
+
+1101：8000us 
+
+1110：9000us 
+
+1111：10000us 
+
+1 ACKLPM 在 LPM 事务中使能 ACK
+
+1：ACK 
+
+设备仅在成功的 LPM 事务上使用 ACK 进行响应
+
+- LPM 事务中无错误
+
+- 无数据挂起错误
+
+- bLinkState = 0001 在接收的 LPM 事务中
+
+0：NYET 
+
+设备使用 NYET 进行响应
+
+- 接收的 bLinkState 值不是 0001
+
+- 接收 LPM 事务时产生了一个错误
+
+注意：仅在设备模式下访问
+
+0 LPMEN LPM 使能
+
+1：使能 LPM
+
+0：禁用 LPM
+
+# 断电寄存器（USBHS_PWRD）
+
+地址偏移：0x0058
+
+复位值：0x0000 0000
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td>保留</td><td></td><td></td><td></td><td></td><td>ADPF</td><td></td><td></td><td>保留</td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>rc_w1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></table>
+
+<table><tr><td>保留</td><td>ADPMEN</td></tr></table>
+
+rw 
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:24</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>23</td><td>ADPF</td><td>ADP 事件中断标志位</td></tr><tr><td>22:1</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>0</td><td>ADPMEN</td><td>ADP 模块使能1: ADP 模块使能0: ADP 模块禁用</td></tr></table>
+
+# ADP 控制和状态寄存器（USBHS_ADPCTL）
+
+地址偏移：0x0060
+
+复位值：0x0000 0000
+
+为了写入该寄存器，需要写入RWR为10，并保持轮询直到RWR=00。
+
+为了读取该寄存器，需要等待任何ADP标志被置位或用01写入RWR并保持轮询直到RWR=00。
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td colspan="3">保留</td><td colspan="2">RWR[1:0]</td><td>ADPTFM</td><td>ADPSNFM</td><td>ADPPRM</td><td>ADPTF</td><td>ADPSNF</td><td>ADPPRF</td><td>ADPEN</td><td>ADPRST</td><td>SNEN</td><td>PREN</td><td>CHGT[10]</td></tr><tr><td colspan="3"></td><td colspan="2">rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw_w1</td><td>rw_w1</td><td>rw_w1</td><td>rw</td><td>rs</td><td>rw</td><td>rw</td><td>r</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td colspan="10">CHGT[9:0]</td><td colspan="2">PERPR[1:0]</td><td colspan="2">RESOPR[1:0]</td><td colspan="2">DSCHGPR[1:0]</td></tr><tr><td colspan="10">r</td><td colspan="2">rw</td><td colspan="2">rw</td><td colspan="2">rw</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:29</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>28:27</td><td>RWR[1:0]</td><td>读和写请求00: 读和写有效(通过内核更新)01: 读请求10: 写请求</td></tr><tr><td>26</td><td>ADPTFM</td><td>ADP超时中断标志的掩码</td></tr><tr><td>25</td><td>ADPSNFM</td><td>ADP检测中断标志的掩码</td></tr><tr><td>24</td><td>ADPPRFM</td><td>ADP探测中断标志的掩码</td></tr><tr><td>23</td><td>ADPTF</td><td>ADP超时中断标志</td></tr><tr><td>22</td><td>ADPSNF</td><td>ADP检测中断标志</td></tr><tr><td>21</td><td>ADPPRF</td><td>ADP探测中断标志</td></tr><tr><td>20</td><td>ADPEN</td><td>ADP使能1: ADP使能0: ADP禁用</td></tr><tr><td>19</td><td>ADPRST</td><td>ADP复位复位完成后自动清除</td></tr><tr><td>18</td><td>SNEN</td><td>ADP检测使能1: 检测使能0: 检测禁止</td></tr><tr><td>17</td><td>PREN</td><td>ADP探测使能1: 探测使能0: 探测禁止</td></tr><tr><td>16:6</td><td>CHGT[10:0]</td><td>VBUS从VADPSINK渐变到VADPPRB的最新时间。这些位以32kHz时钟周期为单位定义。000: 1个周期001: 2个周期002: 3个周期003: 4个周期...7ff: 2048个周期</td></tr><tr><td>5:4</td><td>PERPR[1:0]</td><td>探测周期00: 0.625s到0.925s01: 1.25s到1.85s10: 1.9s到2.6s</td></tr><tr><td>3:2</td><td>RESOPR[1:0]</td><td>CHGT值的分辨率。这些位以32kHz时钟周期为单位定义。如果选择10,则CHGT每3个32kHz时钟周期递增一次。00: 1个周期01: 2个周期10: 3个周期11: 4个周期</td></tr><tr><td>1:0</td><td>DSCHGPR[1:0]</td><td>探测放电时间00: 4ms01: 8ms</td></tr></table>
+
+10：16 ms 
+
+11：32 ms 
+
+# 主机周期性发送 FIFO 长度寄存器（USBHS_HPTFLEN）
+
+地址偏移：0x0100
+
+复位值：0x0200 0600
+
+该寄存器只能按字（32位）访问
+
+![image](images/ca575cb49259.jpg)
+
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:16</td><td>HPTXFD[15:0]</td><td>主机周期性Tx FIFO深度以32位字计数<eq>1 \leq HPTXFD \leq 1024</eq></td></tr><tr><td>15:0</td><td>HPTXFSAR[15:0]</td><td>主机周期性Tx RAM起始地址主机周期性发送FIFO RAM起始地址</td></tr></table>
+
+# 设备 IN 端点发送 FIFO 长度寄存器 （USBHS_DIEPxTFLEN）（x = 1..7，其中 x 为FIFO 编号）
+
+地址偏移：0x0104 + (FIFO_number – 1) × 0x04
+
+复位值：0x0200 0400
+
+该寄存器只能按字（32位）访问
+
+![image](images/3fd0698fd6dc.jpg)
+
+
+15:0] 
+
+IEPTXRSAR 
+
+r/rw 
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:16</td><td>IEPTXFD[15:0]</td><td>IN端点Tx FIFO深度以32位字计数<eq>1 \leq HPTXFD \leq 1024</eq></td></tr><tr><td>15:0</td><td>IEPTXRSAR[15:0]</td><td>IN端点FIFOx Tx RAM起始地址以32位字为单位的IN端点发送FIFOx起始地址</td></tr></table>
+
+# 49.7.2. 主机控制和状态寄存器
+
+# 主机控制寄存器（USBHS_HCTL）
+
+地址偏移：0x0400
+
+复位值：0x0000 0000
+
+在主机模式下，上电后，该寄存器有USB内核配置。主机初始化后，无需修改。
+
+该寄存器只能按字（32位）访问
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+
+<table><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td>保留</td><td></td><td></td><td></td><td></td><td></td><td></td><td>SPDFLS</td><td colspan="2">保留</td></tr></table>
+
+rw 
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:3</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>2</td><td>SPDFSLS</td><td>限制速度为FS和LS软件可以利用该控制位限制USBHS的枚举速度为FS/LS,并且使USBHS在复位的过程中不执行高速枚举。0:不限制速度1:限制速度仅为FS/LS</td></tr><tr><td>1:0</td><td>保留</td><td>必须保持复位值。</td></tr></table>
+
+# 主机帧间隔寄存器（USBHS_HFT）
+
+地址偏移：0x0404
+
+复位值：0x0000 EA60
+
+当USBHS控制器正在枚举中时，该寄存器为当前枚举速度设置帧间隔。
+
+该寄存器只能按字（32位）访问
+
+![image](images/8115a0dcc9d0.jpg)
+
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:16</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>15:0</td><td>FRI[15:0]</td><td>帧间隔该值描述了以PHY时钟为单位的帧周期。每次端口复位操作后,端口被使能,USBHS根据当前速度,采用一个固有值,并且软件可以向该位域写值以改变该固有值。该值需要采用以下描述的频率来进行计算:内部嵌入式PHY高速:60MHz全速/低速:48MHz外部ULPI PHY:60MHz</td></tr></table>
+
+# 主机帧信息保持寄存器（USBHS_HFINFR）
+
+地址偏移：0x0408
+
+复位值：0xEA60 0000
+
+该寄存器只能按字（32位）访问
+
+![image](images/6d9b09a26896.jpg)
+
+
+FRNUM[15:0] 
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:16</td><td>FRT[15:0]</td><td>帧剩余时间该位域以PHY时钟为单位反映了当前帧剩余时间。</td></tr><tr><td>15:0</td><td>FRNUM[15:0]</td><td>帧号该位域反映了当前帧的帧号,当其增加到0x3FFF后,其值变为0。</td></tr></table>
+
+# 主机周期性发送 FIFO/队列状态寄存器（USBHS_HPTFQSTAT）
+
+地址偏移：0x0410
+
+复位值：0x0008 0200
+
+该寄存器反映了主机周期性Tx FIFO和请求队列的当前状态。请求队列包括在主机模式下的IN、OUT或其他请求条目。
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td>PTXREQ[7:0]</td><td></td><td></td><td></td><td></td><td></td><td></td><td>PTXREQ[7:0]</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td>r</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>r</td><td></td><td></td><td></td><td></td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td></td><td></td><td></td><td></td><td>PTXFS[15:0]</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:24</td><td>PTXREQT[7:0]</td><td>周期性Tx 请求队列的顶部条目在周期性发送请求队列中的条目位31:奇偶帧-0:奇数帧-1:偶数帧位30:27:通道号位26:25:-00:IN/OUT 令牌-01:0长度OUT包-11:通道中止请求</td></tr></table>
+
+
+位24：中止标志，指示所选通道的最后一个条目
+
+
+<table><tr><td rowspan="8">23:16</td><td rowspan="8">PTXREQS[7:0]</td><td>周期性发送请求队列空间</td></tr><tr><td>周期性发送请求队列剩余空间</td></tr><tr><td>0: 请求队列为空</td></tr><tr><td>1: 1个条目</td></tr><tr><td>2: 2个条目</td></tr><tr><td>...</td></tr><tr><td>n: n个条目 (0≤n≤8)</td></tr><tr><td>其他: 保留</td></tr><tr><td rowspan="9">15:0</td><td rowspan="9">PTXFS[15:0]</td><td>周期性发送FIFO空间</td></tr><tr><td>周期性发送FIFO剩余空间</td></tr><tr><td>以32位字计数</td></tr><tr><td>0: 周期性发送FIFO为空</td></tr><tr><td>1: 1个字</td></tr><tr><td>2: 2个字</td></tr><tr><td>...</td></tr><tr><td>n: n个字 (0≤n≤PTXFD))</td></tr><tr><td>其他: 保留</td></tr></table>
+
+# 主机所有通道中断寄存器（USBHS_HACHINT）
+
+地址偏移：0x0414
+
+复位值：0x0000 0000
+
+当触发一个通道中断时，USBHS在该寄存器中置位相应的位，并且软件可以读取该寄存器以获取产生中断的通道。
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td colspan="16">保留</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+
+r 
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:16</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>15:0</td><td>HACHINT[15:0]</td><td>主机所有通道中断</td></tr></table>
+
+每一位表示一个通道：位0代表通道0，位15表示通道15
+
+# 主机所有通道中断使能寄存器（USBHS_HACHINTEN）
+
+地址偏移：0x0418
+
+复位值：0x0000 0000
+
+软件可以使用该寄存器使能或禁用一个通道的中断。只有该寄存器中相应通道的中断使能控制位被置位，USBHS_GINTF寄存器中的通道中断标志位HCIF标志位才可产生。
+
+
+该寄存器只能按字（32位）访问
+
+
+![image](images/c805a7772498.jpg)
+
+
+
+rw
+
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:16</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>15:0</td><td>CINTEN[15:0]</td><td>通道中断使能0:禁用通道n中断1:使能通道n中断每一位表示一个通道:位0代表通道0,位15代表通道15</td></tr></table>
+
+# 主机端口控制和状态寄存器（USBHS_HPCS）
+
+地址偏移：0x0440
+
+复位值：0x0002 0000
+
+该寄存器控制端口行为，并且也包含一些反映端口状态的标志位。如果本寄存器中的PRST、PEDC和PCD标志位被USBHS置位的话，USBHS_GINTF寄存器中的HPIF标志位会被置位。
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>PS[1:0]</td><td></td><td>PTEST[3]</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>r</td><td>rw</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></table>
+
+<table><tr><td>PTEST[2:0]</td><td>PP</td><td>PLST[1:0]</td><td>保留</td><td>PRST</td><td>PSP</td><td>PREM</td><td>保留</td><td>PEDC</td><td>PE</td><td>PCD</td><td>PCST</td></tr><tr><td>rw</td><td>rw</td><td>r</td><td></td><td>rw</td><td>rs</td><td>rw</td><td></td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>r</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:19</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>18:17</td><td>PS[1:0]</td><td>端口速度反映连接到该端口的设备的枚举速度。00:高速01:全速10:低速其他:保留</td></tr><tr><td>16:13</td><td>PTEST[3:0]</td><td>端口测试控制软件向该字段写入一个非零值以使端口进入测试模式,相应的模式发送到端口上。使用测试模式时,还应设置USBHS_GUSBCS寄存器中的HS_CUR_FE位。0000:测试模式禁止0001:Test_J模式0010:Test_K模式0011:Test_SE0_NAK模式0100:Test_Packet模式0101:强制测试使能其他:保留</td></tr><tr><td>12</td><td>PP</td><td>端口供电在端口被使用后,该控制位应该被置位。由于USBHS不具有电源供应能力,它只能使用该控制位以获取该端口是否在供电状态。软件应该在设置该控制位之前,保证在VBus引脚上具有电源供应。0:端口掉电1:端口供电</td></tr><tr><td>11:10</td><td>PLST[1:0]</td><td>端口线状态反映USB数据线当前状态位10:DP线状态位11:DM线状态</td></tr><tr><td>9</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>8</td><td>PRST</td><td>端口复位应用通过设置该控制位以在USB端口上启动一个复位信号。当应用希望停止复位信号时,应用应该清除该控制位。0:端口不在复位状态1:端口处于复位状态</td></tr><tr><td>7</td><td>PSP</td><td>端口挂起应用设置该控制位来将端口进入挂起状态。当该控制位被置位后,端口停止发送SOF令牌包。该控制位只能够通过以下操作清除。- 应用置位该寄存器中的PRST控制位- 置位该寄存器中的PREM控制位- 检测到一个远程唤醒信号- 检测到一个设备断开0:端口不在挂起状态1:端口处于挂起状态</td></tr><tr><td>6</td><td>PREM</td><td>端口恢复应用通过置位该控制位以在USB端口上启动一个恢复信号。当应用希望停止恢复信号时,应用可以清除该控制位。0:无恢复驱动1:恢复驱动当应用程序在睡眠状态将PREM置1时,内核继续驱动恢复信号,直到计时器计数到BESLTH指定的时间。当内核检测到USB远程唤醒时,开始驱动恢复信号,并在恢复结束时自动将其清除。</td></tr><tr><td>5:4</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>3</td><td>PEDC</td><td>端口使能/禁止更改当该寄存器中的位2端口使能控制位更改时,USB内核置位该标志位。</td></tr><tr><td>2</td><td>PE</td><td>端口使能当USB复位信号完成后,USBHS自动置位该位,并且该位不可由软件置位。该位可通过以下事件清除:- 一个断开状态- 软件清除该位0:端口禁止1:端口使能</td></tr><tr><td>1</td><td>PCD</td><td>端口连接检测当检测到设备连接时,USBHS置位该标志位。可通过向该位写1清除该标志位。</td></tr><tr><td>0</td><td>PCST</td><td>端口连接状态0:设备没有连接到该端口1:设备连接到该端口</td></tr></table>
+
+主机通道 x 控制寄存器（USBHS_HCHxCTL）（x = 0..15，其中 x 为通道号）
+
+地址偏移：0x0500 + （通道号 × 0x20）
+
+复位值：0x0000 0000
+
+该寄存器只能按字（32位）访问
+
+31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 
+
+<table><tr><td>CEN</td><td>CDIS</td><td>ODDFRM</td><td colspan="7">DAR[6:0]</td><td colspan="2">MPC [1:0]</td><td colspan="2">EPTYPE[1:0]</td><td>LSD</td><td>保留</td></tr><tr><td>rs</td><td>rs</td><td>rw</td><td colspan="3"></td><td colspan="4">rw</td><td colspan="2">rw</td><td colspan="2">rw</td><td>rw</td><td></td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>EPDIR</td><td colspan="4">EPNUM[3:0]</td><td colspan="11">MPL[10:0]</td></tr><tr><td>rw</td><td colspan="4">rw</td><td colspan="11">rw</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31</td><td>CEN</td><td>通道使能由应用设置,并且由USBHS清除0:通道禁止1:通道使能软件应该遵循操作指南来禁用或者使能一个通道</td></tr><tr><td>30</td><td>CDIS</td><td>通道禁止软件可以置位该控制位,来从处理事务中禁用该通道。软件应该遵循操作指南来禁用或者使能一个通道。</td></tr><tr><td>29</td><td>ODDFRM</td><td>奇偶帧控制对于周期性传输(中断或同步传输),该位控制将要处理的通道事务为奇数帧还是偶数帧。</td></tr><tr><td>28:22</td><td>DAR[6:0]</td><td>设备地址与该通道通信的USB设备地址。</td></tr><tr><td>21:20</td><td>MPC[1:0]</td><td>多包计数对于周期性传输,该位域指定主机每个微帧必须执行的事务数量。对于非周期性传输,该位域指定在内部DMA引擎更改仲裁之前,DMA为此通道获取或写入的包数量。00:保留01:每微帧发出1个事务10:每微帧发出2个事务11:每微帧发出3个事务</td></tr><tr><td>19:18</td><td>EPTYPE[1:0]</td><td>端点类型与该通道通信的端点的传输类型00:控制01:同步10:批量11:中断</td></tr><tr><td>17</td><td>LSD</td><td>低速设备与该通道通信的设备是一个低速设备。</td></tr></table>
+
+<table><tr><td>16</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>15</td><td>EPDIR</td><td>端点方向与该通道通信的端点的传输方向0:OUT1:IN</td></tr><tr><td>14:11</td><td>EPNUM[3:0]</td><td>端点号与该通道通信的端点号</td></tr><tr><td>10:0</td><td>MPL[10:0]</td><td>最大包长目标端点的最大包长</td></tr></table>
+
+主机通道 x 分裂事务控制寄存器（USBHS_HCHxSTCTL）（x = 0..15，其中 x = 通道号）
+
+地址偏移：0x0504 + （通道号 × 0x20）
+
+复位值：0x0000 0000
+
+该寄存器只能按字（32位）访问
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td>SPLEN</td><td colspan="14">保留</td><td>CSPLT</td></tr><tr><td colspan="15">rs</td><td>rw</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td colspan="2">ISOPCE[1:0]</td><td colspan="7">HADDR[6:0]</td><td colspan="7">PADDR[6:0]</td></tr><tr><td colspan="2">rw</td><td colspan="7">rw</td><td colspan="7">rw</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31</td><td>SPLEN</td><td>使能高速分裂事务软件可以置位该控制位以使能在该通道上的高速分裂事务。分裂事务用于通过HUB和一些全速和低速设备端点初始化全速/低速事务。</td></tr><tr><td>30:17</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>16</td><td>CSPLT</td><td>完全分裂使能软件能够置位该控制位来使USBHS执行完全分裂事务,另外,USBHS执行起始分裂事务。</td></tr><tr><td>15:14</td><td>ISOPCE[1:0]</td><td>同步OUT负载延续编码对于全速同步OUT起始分裂,该位域指明高速数据负载如何对应全速数据包。00: 高速数据在全速数据负载的中间01: 高速数据在全速数据负载的尾端</td></tr></table>
+
+10：高速数据在全速数据负载的起始
+
+11：高速数据为全部的全速数据包
+
+<table><tr><td>13:7</td><td>HADDR[6:0]</td><td>HUB地址</td></tr><tr><td></td><td></td><td>该位域为处理全速和低速事务并支持全速和低速设备的HUB地址</td></tr></table>
+
+<table><tr><td>6:0</td><td>PADDR[6:0]</td><td>端口地址</td></tr><tr><td></td><td></td><td>该位域包含当前全速或低速事务传输中目标HUB的端口号</td></tr></table>
+
+# 主机通道 x 中断标志寄存器（USBHS_HCHxINTF）（x = 0..15，其中 x = 通道号）
+
+地址偏移：0x0508 + （通道号 × 0x20）
+
+复位值：0x0000 0000
+
+该寄存器包含一个通道的状态和事件，当软件获取一个通道中断时，软件需要为相应通道读取该寄存器以获取产生中断的中断源。该寄存器中的标志位均由硬件置位，并且写1清除。
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+
+<table><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td colspan="5">保留</td><td>DTER</td><td>REQVR</td><td>BBER</td><td>USBER</td><td>NYET</td><td>ACK</td><td>NAK</td><td>STALL</td><td>DMAER</td><td>CH</td><td>TF</td></tr><tr><td colspan="5"></td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td><td>rc_w1</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:11</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>10</td><td>DTER</td><td>数据切换错误IN事务获取一个数据包,但是该包的PID和USBHS_HCHxLEN寄存器中的DPID[1:0]控制位不匹配。</td></tr><tr><td>9</td><td>REQOVR</td><td>请求队列上溢当软件启动新的传输时,请求队列上溢。</td></tr><tr><td>8</td><td>BBER</td><td>串扰错误USB总线上发生一个串扰事件。产生串扰事件的典型原因是端点发送了一个数据包,但是数据包长度超过了端点的最大包长。</td></tr><tr><td>7</td><td>USBER</td><td>USB总线错误当在接收一个数据包的过程中,发生以下事件时,将置位USB总线错误标志位:- 接收包有一个错误的CRC域- 在USB总线上检测到填充错误</td></tr></table>
+
+
+当等待一个响应包时，超时
+
+
+<table><tr><td>6</td><td>NYET</td><td>NYET接收到一个NYET响应包(在高速模式下)</td></tr><tr><td>5</td><td>ACK</td><td>ACK接收或者发送一个ACK响应包</td></tr><tr><td>4</td><td>NAK</td><td>NAK接收到一个NAK响应包</td></tr><tr><td>3</td><td>STALL</td><td>STALL接收到一个STALL响应包</td></tr><tr><td>2</td><td>DMAER</td><td>DMA 错误当DMA尝试为当前通道获取或写如包数据时,产生一个错误</td></tr><tr><td>1</td><td>CH</td><td>通道中止当DMA未被使能时:通道被当前请求禁用。当DMA使能时:通道被DMA禁用,可能由于该通道的所有事务成功完成或者发生一个USB错误。</td></tr><tr><td>0</td><td>TF</td><td>发送完成该通道所有的事务成功完成并且无错误发生。对于IN通道,在USBHS_HCHxLEN寄存器的PCNT位减到0后,该标志位被置位。对于OUT通道,当软件从RxFIFO中读取和取出一个TF状态条目时,该标志位被置位。</td></tr></table>
+
+# 主机通道 x 中断使能寄存器 （USBHS_HCHxINTEN）（x = 0..15，其中 x = 通道号）
+
+地址偏移：0x050C + （通道号 × 0x20）
+
+复位值：0x0000 0000
+
+该寄存器包含USBHS_HCHxINTF寄存器内中断标志位的中断使能位。如果该寄存器的某位被软件置位，USBHS_HCHxINTF寄存器内的相应位能够触发一个通道中断。该寄存器内的位可由软件置位和清除。
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td colspan="16">保留</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></table>
+
+<table><tr><td>保留</td><td>DTERIE</td><td>REQOVRIE</td><td>BBERIE</td><td>USBERIE</td><td>NYETIE</td><td>ACKIE</td><td>NAKIE</td><td>STALLIE</td><td>DMAERIE</td><td>CHIE</td><td>TFIE</td></tr><tr><td></td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td><td>rw</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:11</td><td>保留</td><td>必须保持复位值。</td></tr><tr><td>10</td><td>DTERIE</td><td>数据切换错误中断使能0:禁用数据切换错误中断1:使能数据切换错误中断</td></tr><tr><td>9</td><td>REQOVRIE</td><td>请求队列上溢中断使能0:禁用请求队列上溢中断1:使能请求队列上溢中断</td></tr><tr><td>8</td><td>BBERIE</td><td>串扰错误中断使能0:禁用串扰错误中断1:使能串扰错误中断</td></tr><tr><td>7</td><td>USBERIE</td><td>USB总线错误中断使能0:禁用USB总线错误中断1:使能USB总线错误中断</td></tr><tr><td>6</td><td>NYETIE</td><td>NYET中断使能0:禁用NYET中断1:使能NYET中断</td></tr><tr><td>5</td><td>ACKIE</td><td>ACK中断使能0:禁用ACK中断1:使能ACK中断</td></tr><tr><td>4</td><td>NAKIE</td><td>NAK中断使能0:禁用NAK中断1:使能NAK中断</td></tr><tr><td>3</td><td>STALLIE</td><td>STALL中断使能0:禁用STALL中断1:使能STALL中断</td></tr><tr><td>2</td><td>DMAERIE</td><td>DMA 错误中断使能0:禁用DMA错误中断1:使能DMA错误中断</td></tr><tr><td>1</td><td>CHIE</td><td>通道中止中断使能0:禁用通道中止中断1:使能通道中止中断</td></tr><tr><td>0</td><td>TFIE</td><td>传输完成中断使能</td></tr></table>
+
+0：禁用传输完成中断
+
+1：使能传输完成中断
+
+# 主机通道 x 长度寄存器（USBHS_HCHxLEN）（x = 0..15，其中 x = 通道号）
+
+地址偏移：0x0510 + （通道号 × 0x20）
+
+复位值：0x0000 0000
+
+
+该寄存器只能按字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td>PING</td><td colspan="2">DPID[1:0]</td><td colspan="4"></td><td colspan="6">PCNT[9:0]</td><td colspan="3">TLEN[18:16]</td></tr><tr><td>rw</td><td colspan="2">rw</td><td colspan="4"></td><td colspan="6">rw</td><td colspan="3">rw</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td colspan="16">TLEN[15:0]</td></tr></table>
+
+rw 
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31</td><td>PING</td><td>PING令牌请求对于OUT传输,如果软件置位该控制位,USBHS会执行PING协议。当OUT事务接收到一个NAK或NYET握手包时,USBHS会自动置位该控制位。不要为IN传输置位该控制位。</td></tr><tr><td>30:29</td><td>DPID[1:0]</td><td>数据PID软件应该在传输起始之前写该段位域。对于OUT传输,该位域包含第一个传输包的数据PID。对于IN传输,该位域包含第一个接收包的数据PID,并且如果数据PID不匹配的话,将会触发DTER标志位。在传输开始之后,USBHS遵循USB协议自动改变和切换该位域。00:DATA001:DATA210:DATA111:MDATA(非控制)/SETUP(控制)</td></tr><tr><td>28:19</td><td>PCNT[9:0]</td><td>包计数在一个传输中希望发送(OUT)或接收(IN)的数据包个数。软件应该在通道使能之前写该位域。在传输启动之后,该位域在USBHS正确传输每个数据包后,自动减少。</td></tr><tr><td>18:0</td><td>TLEN[18:0]</td><td>传输长度一次传输的总数据字节数。对于OUT传输,该位域为OUT传输中期望发送的所有数据包总数据字节数。软件应该在通道使能之前写该位域。当软件或DMA正确向通道的数据FIFO中写入一个包时,</td></tr></table>
+
+该位域以包中字节大小进行减少。
+
+对于IN传输，每次软件或DMA从RxFIFO中读取一个包后，该位域也以包中字节大小进行减少。
+
+# 主机通道 x DMA 地址寄存器（USBHS_HCHxDMAADDR）（x = 0..15，其中 x = 通道号）
+
+地址偏移：0x0514 + （通道号 × 0x20）
+
+复位值：0x0000 0000
+
+该寄存器只能按字（32位）访问
+
+![image](images/35b77e5e4bc3.jpg)
+
+
+
+rw
+
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:0</td><td>DMAADDR[31:0]</td><td>DMA地址</td></tr></table>
+
+该位域定义了端点DMA地址。DMA使用该地址来为该通道取出或写入包数据。
+
+# 49.7.3. 设备控制和状态寄存器
+
+# 设备配置寄存器（USBHS_DCFG）
+
+地址偏移：0x0800
+
+复位值：0x0000 0000
+
+在上电、枚举或执行某些控制命令后，该寄存器配置内核为设备模式。在设备初始化后，不可以改变该寄存器值。
+
+该寄存器采用字（32位）访问
+
+![image](images/1499b0e4f6b0.jpg)
+
+
+<table><tr><td>保留</td><td>EOPFT[1:0]</td><td>DAR[6:0]</td><td>保留</td><td>NZLSOH</td><td>DS[1:0]</td></tr><tr><td></td><td>rw</td><td>rw</td><td></td><td>rw</td><td>rw</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:13</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>12:11</td><td>EOPFT[1:0]</td><td>周期性帧尾时间该域定义周期性帧时间的帧尾标志触发的时间点00:80%的帧时间01:85%的帧时间10:90%的帧时间11:95%的帧时间</td></tr><tr><td>10:4</td><td>DAR[6:0]</td><td>设备地址该位定义USB设备地址,USBHS采用该位匹配接收的设备令牌地址域,在接收到来自主机的设置地址的命令后,软件设置该域</td></tr><tr><td>3</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>2</td><td>NZLSOH</td><td>非零长度OUT状态阶段握手在控制传输的OUT状态阶段,当USB设备接收到一个非零长度数据包时,该域控制控制USBHS是接收该包,还是用STALL握手信号拒绝该包。0:把该包视为正常包,根据设备OUT端点控制寄存器的NAKS和STALL位,回复握手相应握手包1:发送STALL握手,不保存接收到的OUT数据包</td></tr><tr><td>1:0</td><td>DS[1:0]</td><td>设备速度该域控制设备连入主机后的设备速度00:高速01:全速其他:保留</td></tr></table>
+
+# 设备控制寄存器（USBHS_DCTL）
+
+地址偏移：0x0804
+
+复位值：0x0000 0000
+
+该寄存器采用字（32位）访问
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td>保留</td><td></td><td></td><td></td><td></td><td></td><td></td><td>L1RJCT</td><td>保留</td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td colspan="3">rw</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></table>
+
+<table><tr><td>保留</td><td>POIF</td><td>CGONAK</td><td>SGONAK</td><td>CGINAK</td><td>SGINAK</td><td>DTEST[2.0]</td><td>GONS</td><td>GINS</td><td>SD</td><td>RWKUP</td></tr><tr><td></td><td>rw</td><td>w</td><td>w</td><td>w</td><td>w</td><td>rw</td><td>r</td><td>r</td><td>rw</td><td>rw</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:19</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>18</td><td>L1RJCT</td><td>禁止深度睡眠当这一位被设置,内核以NYET响应LPM事务,同时BESL大于BSELTH</td></tr><tr><td>17:12</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>11</td><td>POIF</td><td>上电初始化完成软件通过设置该位,通知USBHS寄存器在从掉电模式下唤醒,然后完成初始化。</td></tr><tr><td>10</td><td>CGONAK</td><td>清零全局OUT NAK软件设置该位从而清零该寄存器的GONS位</td></tr><tr><td>9</td><td>SGONAK</td><td>设置全局OUT NAK软件设置该位从而实现该寄存器的位GONS置位。当GONS位为零,设置该位会引起USBHS_GINTF寄存器的GONAK标志触发,软件应该在再写该位前清除GONAK标志。</td></tr><tr><td>8</td><td>CGINAK</td><td>清零全局IN NAK软件设置该位从而清零该寄存器的GINS位</td></tr><tr><td>7</td><td>SGINAK</td><td>设置全局IN NAK软件设置该位从而实现该寄存器的位GINS置位当GINS位为零,设置该位会引起USBHS_GINTF寄存器的GINAK标志触发,软件应该在再写该位前清除GINAK标志。</td></tr><tr><td>6:4</td><td>DTEST[2:0]</td><td>设备测试控制软件向该字段写入一个非零值以使端口进入测试模式,相应的模式发送到端口上。使用测试模式时,还应设置USBHS_GUSBCS寄存器中的HS_CUR_FE位。0000:测试模式禁止0001:Test_J模式0010:Test_K模式0011:Test_SE0_NAK模式0100:Test_Packet模式0101:强制测试使能其他:保留</td></tr><tr><td>3</td><td>GONS</td><td>全局OUT NAK状态0:USBHS回复OUT事务的握手信号以及是否保存OUT数据包由Rx FIFO状态、端点的NAKS、STALL位确定。1:USBHS回复OUT事务NAK握手信号,不保存接收的OUT数据包。</td></tr><tr><td>2</td><td>GINS</td><td>全局IN NAK状态0: USBHS回复IN事务的握手信号由Tx FIFO状态、端点的NAKS、STALL位确定。1: USBHS通常回复IN事务NAK握手信号</td></tr><tr><td>1</td><td>SD</td><td>软断开软件可实现USB总线上的软断开,在置1该位后,如果当前是高速模式,USBHS先退回到全速模式,然后在关掉DP线上的上拉电阻,从而引起主机检测设备的断开。0: 没有软断开生成1: 生成软断开</td></tr><tr><td>0</td><td>RWKUP</td><td>远程唤醒在挂起状态,软件可通过该位来生成一个远程唤醒信号来通知主机恢复USB总线0: 没有远程唤醒信号生成1: 生成远程唤醒信号当核心已启用LPM且处于睡眠状态时,如果设置了此位,则核心将继续驱动它,并在50us后自动清除它(TL1DevDrvResume)。当从LPM事务接收的bRemoteWake值为零时,应用程序无法设置此位。</td></tr></table>
+
+# 设备状态寄存器（USBHS_DSTAT）
+
+地址偏移：0x0808
+
+复位值：0x0000 0000
+
+该寄存器包含设备模式下的 USBHS的状态和信息。
+
+
+该寄存器采用字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td></td><td>保留</td><td></td><td></td><td></td><td></td><td></td><td></td><td>FNRSOF[13:8]</td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>r</td><td></td><td></td><td></td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td></td><td></td><td></td><td></td><td>FNRSOF[7:0]</td><td></td><td></td><td></td><td></td><td>保留</td><td></td><td></td><td>ES[1:0]</td><td></td><td>SPST</td><td></td></tr><tr><td></td><td></td><td></td><td></td><td>r</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>r</td><td></td><td>r</td><td></td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:22</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>21:8</td><td>FNRSOF[13:0]</td><td>所接收的SOF帧编号USBHS会在接收到一个SOF令牌后更新该域。</td></tr><tr><td>7:3</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>2:1</td><td>ES[1:0]</td><td>枚举速度</td></tr></table>
+
+该域指示所枚举的设备速度，在寄存器USBHS_GINTF的ENUMF标志触发后，软件可以读取该域。
+
+00：高速
+
+01：全速
+
+其他：保留
+
+<table><tr><td>0</td><td>SPST</td><td>挂起状态</td></tr><tr><td></td><td></td><td>该位指示设备是否处于挂起状态。</td></tr><tr><td></td><td></td><td>0: 设备不在挂起状态</td></tr><tr><td></td><td></td><td>1: 设备在挂起状态</td></tr></table>
+
+# 设备 IN 端点通用中断使能寄存器（USBHS_DIEPINTEN）
+
+地址偏移：0x810
+
+复位值：0x0000 0000
+
+该寄存器包含寄存器 USBHS_DIEPxINTF 中的标志的中断使能位，如果软件置 1 某位，其在寄存器 USBHS_DIEPxINTF 中对应的位可以触发一个寄存器 USBHS_DAEPINT 端点中断。该位可以通过软件置位和清零。
+
+该寄存器采用字（32位）访问
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td colspan="16">保留</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td colspan="2">保留</td><td>NAKEN</td><td colspan="6">保留</td><td>IEPNEEN</td><td>保留</td><td>EPTXFUDEN</td><td>CITOEN</td><td>保留</td><td>EPDISEN</td><td>TFEN</td></tr><tr><td colspan="2"></td><td>rw</td><td colspan="6"></td><td>rw</td><td></td><td>rw</td><td>rw</td><td></td><td>rw</td><td>rw</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:14</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>13</td><td>NAKEN</td><td>发送NAK握手中断使能位0:除能中断1:使能中断</td></tr><tr><td>12:7</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>6</td><td>IEPNEEN</td><td>IN端点NAK有效中断使能位0:除能中断1:使能中断</td></tr><tr><td>5</td><td>保留</td><td>必须保留为复位值。</td></tr></table>
+
+<table><tr><td>4</td><td>EPTXFUDEN</td><td>端点Tx FIFO下溢中断使能位0:除能中断1:使能中断</td></tr><tr><td>3</td><td>CITOEN</td><td>控制IN事务超时中断使能位0:除能中断1:使能中断</td></tr><tr><td>2</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>1</td><td>EPDISEN</td><td>端点除能中断使能位0:除能中断1:使能中断</td></tr><tr><td>0</td><td>TFEN</td><td>传输完成中断使能位0:除能中断1:使能中断</td></tr></table>
+
+# 设备 OUT 端点通用中断使能寄存器（USBHS_DOEPINTEN）
+
+地址偏移：0x0814
+
+复位值：0x0000 0000
+
+该寄存器包含寄存器 USBHS_DOEPxINTF 中的标志的中断使能位，如果软件置 1 某位，其在寄存器 USBHS_DOEPxINTF 中对应的位可以触发一个寄存器 USBHS_DAEPINT 端点中断。该位可以通过软件置位和清零。
+
+该寄存器采用字（32位）访问
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+
+<table><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>保留</td><td>NYETEN</td><td colspan="7">保留</td><td>BTBSTPEN</td><td>保留</td><td>EPRXFOVREN</td><td>STPFEN</td><td>保留</td><td>EPDISEN</td><td>TFEN</td></tr><tr><td></td><td>rw</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>rw</td><td></td><td>rw</td><td>rw</td><td></td><td>rw</td><td>rw</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:15</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>14</td><td>NYETEN</td><td>发送NYET握手中断使能位0:除能中断1:使能中断</td></tr><tr><td>13:7</td><td>保留</td><td>必须保留为复位值。</td></tr></table>
+
+<table><tr><td>6</td><td>BTBSTPEN</td><td>连续SETUP包中断使能位(仅适用于控制OUT端点)</td></tr><tr><td></td><td></td><td>0:除能中断</td></tr><tr><td></td><td></td><td>1:使能中断</td></tr><tr><td>5</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>4</td><td>EPRXFOVREN</td><td>端点Rx FIFO上溢中断使能位</td></tr><tr><td></td><td></td><td>0:除能中断</td></tr><tr><td></td><td></td><td>1:使能中断</td></tr><tr><td>3</td><td>STPFEN</td><td>SETUP阶段完成中断使能位(仅适用于控制OUT端点)</td></tr><tr><td></td><td></td><td>0:除能中断</td></tr><tr><td></td><td></td><td>1:使能中断</td></tr><tr><td>2</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>1</td><td>EPDISEN</td><td>端点除能中断使能位</td></tr><tr><td></td><td></td><td>0:除能中断</td></tr><tr><td></td><td></td><td>1:使能中断</td></tr><tr><td>0</td><td>TFEN</td><td>传输完成中断使能位</td></tr><tr><td></td><td></td><td>0:除能中断</td></tr><tr><td></td><td></td><td>1:使能中断</td></tr></table>
+
+# 设备端点中断寄存器（USBHS_DAEPINT）
+
+地址偏移：0x0818
+
+复位值：0x0000 0000
+
+当一个端点的中断被触发，USBHS 置 1 该寄存器的相应位，软件可通过该寄存器知道在本次中断中的端点号。
+
+
+该寄存器采用字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td colspan="8">保留</td><td colspan="8">OEPITB[7:0]</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td colspan="8">保留</td><td colspan="8">IEPITB[7:0]</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:24</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>23:16</td><td>OEPITB[7:0]</td><td>设备OUT端点中断位</td></tr></table>
+
+每个位代表一个OUT端点：Bit16代表OUT端点0，Bit23代表OUT端点7
+
+15:8 保留 必须保留为复位值。
+
+7:0 IEPITB[7:0] 设备IN端点中断位
+
+每个位代表一个IN端点：Bit0代表IN端点0，Bit7代表IN端点7
+
+# 设备端点中断使能寄存器（USBHS_DAEPINTEN）
+
+地址偏移：0x081C
+
+复位值：0x0000 0000
+
+该寄存器可通过软件使能或除能端点的中断，只有当端点在该寄存器中相应位被置 1 才能触发寄存器 USBHS_GINTF 的端点中断标志 OEPIF 或 IEPIF。
+
+该寄存器采用字（32位）访问
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td colspan="8">保留</td><td colspan="8">[18]</td></tr><tr><td colspan="16">r</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td colspan="8">保留</td><td colspan="8">[24]</td></tr></table>
+
+![image](images/24d8459df170.jpg)
+
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:24</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>23:16</td><td>OEPIE[7:0]</td><td>OUT端点中断使能位0:除能OUT端点n中断1:使能OUT端点n中断每个位代表一个OUT端点:Bit16对应OUT端点0,Bit23对应OUT端点7</td></tr><tr><td>15:8</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>7:0</td><td>IEPIE[7:0]</td><td>IN端点中断使能位0:除能IN端点n中断1:使能IN端点n中断每个位代表一个IN端点:Bit0对应IN端点0,Bit7对应IN端点7</td></tr></table>
+
+# 设备 VBUS 放电时间寄存器（USBHS_DVBUSDT）
+
+地址偏移：0x0828
+
+复位值：0x0000 17D7
+
+
+该寄存器采用字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td colspan="16">保留</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:16</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>15:0</td><td>DVBUSDT[15:0]</td><td>设备<eq>V_{BUS}</eq>放电时间在SRP协议中,在<eq>V_{BUS}</eq>脉冲产生后,有一个放电过程,该域定义了<eq>V_{BUS}</eq>的放电时间,真正的放电时间是1024*DVBUSDT[15:0]*<eq>T_{USBCLOCK}</eq>,<eq>T_{USBCLOCK}</eq>是USB时钟周期时间。</td></tr></table>
+
+# 设备 VBUS 脉冲时间寄存器（USBHS_DVBUSPT）
+
+地址偏移：0x082C
+
+复位值：0x0000 05B8
+
+
+该寄存器采用字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td colspan="16">保留</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td colspan="4">保留</td><td colspan="12">DVBUSPT[11:0]</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:12</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td rowspan="2">11:0</td><td rowspan="2">DVBUSPT[11:0]</td><td>设备<eq>V_{BUS}</eq>脉冲时间该域定义<eq>V_{BUS}</eq>的脉冲时间,真正的充电时间是<eq>1024^{*}DVBUSPT[1:0]^{*}T_{USB}</eq></td></tr><tr><td><eq>T_{USB}</eq></td></tr></table>
+
+# 设备 IN 端点 FIFO 空中断使能寄存器（USBHS_DIEPFEINTEN）
+
+地址偏移：0x0834
+
+复位值：0x0000 0000
+
+该寄存器包含 IN 端点 Tx FIFO 空中断的使能位
+
+寄存器采用字（32位）访问
+
+![image](images/b499148e360f.jpg)
+
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:8</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>7:0</td><td>IEPTXFEIE[7:0]</td><td>IN端点Tx FIFO空中断的使能位该域控制着USBHS_DIEPxINTF寄存器的TXFE位能否生成一个寄存器USBHS_DAEPINT的端点中断位Bit0对应IN端点0,Bit7对应IN端点70:除能FIFO空中断1:使能FIFO空中断</td></tr></table>
+
+# 设备端点 1 中断寄存器（USBHS_DEP1INT）
+
+地址偏移：0x0838
+
+复位值：0x0000 0000
+
+当端点 1 OUT 或 IN 被触发，USBHS 置位该寄存器的相应位，软件可通过读取该位知道端点1 的 IN 或 OUT 被触发。
+
+该寄存器采用字（32位）访问
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>OEPINT</td><td>保留</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>r</td><td></td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></table>
+
+<table><tr><td>保留</td><td>IEP1INT</td><td>保留</td></tr></table>
+
+r 
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:18</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>17</td><td>OEP1INT</td><td>OUT端点1中断</td></tr><tr><td>16:2</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>1</td><td>IEP1INT</td><td>IN端点1中断</td></tr><tr><td>0</td><td>保留</td><td>必须保留为复位值。</td></tr></table>
+
+# 设备端点 1 中断使能寄存器（USBHS_DEP1INTEN）
+
+地址偏移：0x083C
+
+复位值：0x0000 0000
+
+该寄存器可以用软件使能或除能端点1的中断，只有该寄存器中的相应位被置位才可以引起端点1 IN或者OUT的中断。
+
+该寄存器采用字（32位）访问
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>OEPINTEN</td><td>保留</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td colspan="2">r</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>IEPINTEN</td><td>保留</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:18</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>17</td><td>OEP1INTEN</td><td>OUT端点1中断使能</td></tr><tr><td>16:2</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>1</td><td>IEP1INTEN</td><td>IN端点1中断使能</td></tr><tr><td>0</td><td>保留</td><td>必须保留为复位值。</td></tr></table>
+
+# 设备 IN 端点 1 中断使能寄存器（USBHS_DIEP1INTEN）
+
+地址偏移：0x844
+
+复位值：0x0000 0000
+
+该寄存器包含对应寄存器 USBHS_DIEP1INTF 标志的中断使能位，如果软件置位该寄存器的某一位，其在寄存器 USBHS_DIEP1INTF 中对应的位会触发一个寄存器 USBHS_DEP1INT 中的端点中断，该寄存器的位可以通过软件置位或清零。
+
+
+该寄存器采用字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>保留</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+
+<table><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td colspan="2">保留</td><td>NAKEN</td><td colspan="6">保留</td><td>IEPNEEN</td><td>保留</td><td>EPTXFUDEN</td><td>CITOEN</td><td>保留</td><td>EPDISEN</td><td>TFEN</td></tr><tr><td colspan="2"></td><td>rw</td><td colspan="6"></td><td>rw</td><td></td><td>rw</td><td>rw</td><td></td><td>rw</td><td>rw</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31:14</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>13</td><td>NAKEN</td><td>发送NAK握手中断使能位0:除能中断1:使能中断</td></tr><tr><td>12:7</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>6</td><td>IEPNEEN</td><td>IN端点NAK有效中断使能位0:除能中断1:使能中断</td></tr><tr><td>5</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>4</td><td>EPTXFUD</td><td>端点Tx FIFO下溢中断使能位0:除能中断1:使能中断</td></tr><tr><td>3</td><td>CITOEN</td><td>控制传输IN超时中断使能位0:除能中断1:使能中断</td></tr><tr><td>2</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>1</td><td>EPDISEN</td><td>端点除能中断使能位0:除能中断</td></tr></table>
+
+1：使能中断
+
+0 TFEN 传输完成中断使能位
+
+0：除能中断
+
+1：使能中断
+
+# 设备 OUT 端点 1 中断使能寄存器（USBHS_DOEP1INTEN）
+
+地址偏移：0x0884
+
+复位值：0x0000 0000
+
+该寄存器包含对应寄存器 USBHS_DOEP1INTF 标志的中断使能位，如果软件置位该寄存器的某一位，其在寄存器 USBHS_DOEP1INTF 中对应的位会触发一个寄存器 USBHS_DEP1INT中的端点中断，该寄存器的位可以通过软件置位或清零。
+
+
+该寄存器采用字（32位）访问
+
+
+![image](images/bfe659fa6ddb.jpg)
+
+
+<table><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>保留</td><td>NYETEN</td><td></td><td></td><td>保留</td><td></td><td></td><td></td><td></td><td>BTBSTPEN</td><td>保留</td><td>EPRXFOVREN</td><td>STPFEN</td><td>保留</td><td>EPDISEN</td><td>TFEN</td></tr><tr><td></td><td>rw</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>rw</td><td></td><td>rw</td><td>rw</td><td></td><td>rw</td><td>rw</td></tr></table>
+
+
+位/位域 名称 描述
+
+
+<table><tr><td>31:15</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>14</td><td>NYETEN</td><td>发送NYET握手中断使能位0:除能中断1:使能中断</td></tr><tr><td>13:7</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>6</td><td>BTBSTPEN</td><td>连续SETUP包中断使能位(仅适用于控制OUT端点)0:除能中断1:使能中断</td></tr><tr><td>5</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>4</td><td>EPRXFOVREN</td><td>端点Rx FIFO上溢中断使能位0:除能中断1:使能中断</td></tr><tr><td>3</td><td>STPFEN</td><td>SETUP阶段完成中断使能位(仅适用于控制OUT端点)0:除能中断</td></tr></table>
+
+1：使能中断
+
+2 保留 必须保留为复位值
+
+1 EPDISEN 端点除能中断使能位
+
+0：除能中断
+
+1：使能中断
+
+0 TFEN 传输完成中断使能位
+
+0：除能中断
+
+1：使能中断
+
+# 设备 IN 端点 0 控制寄存器（USBHS_DIEP0CTL）
+
+地址偏移：0x0900
+
+复位值：0x0000 8000
+
+
+该寄存器采用字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td>EPEN</td><td>EPD</td><td colspan="2">保留</td><td>SNAK</td><td>CNAK</td><td colspan="4">TXFNUM[3:0]</td><td>STALL</td><td>保留</td><td colspan="2">EPTYPE[1:0]</td><td>NAKS</td><td>保留</td></tr><tr><td>rs</td><td>rs</td><td></td><td></td><td>w</td><td>w</td><td></td><td>rw</td><td></td><td></td><td>rs</td><td></td><td>r</td><td>r</td><td>r</td><td></td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></table>
+
+<table><tr><td>EPACT</td><td>保留</td><td>MPL[1:0]</td></tr></table>
+
+<table><tr><td>r</td><td>rw</td></tr></table>
+
+
+位/位域 名称 描述
+
+
+<table><tr><td>31</td><td>EPEN</td><td>端点使能软件置位、USBHS清零0: 端点除能1: 端点使能软件应该按照操作指南使能或除能端点</td></tr><tr><td>30</td><td>EPD</td><td>端点除能软件可通过置位该位从而除能端点,软件应该按照操作指南使能或除能端点。</td></tr><tr><td>29:28</td><td>保留</td><td>必须保留为复位值</td></tr><tr><td>27</td><td>SNAK</td><td>置位NAK软件置位该位来设置该寄存器的NAKS位</td></tr><tr><td>26</td><td>CNAK</td><td>清零NAK软件置位该位来清零该寄存器的NAKS位</td></tr><tr><td>25:22</td><td>TXFNUM[3:0]</td><td>Tx FIFO编号定义IN端点0的Tx FIFO编号</td></tr><tr><td>21</td><td>STALL</td><td>STALL握手当接收IN令牌时,软件可以通过置1该位发送STALL握手包,对于相应的OUT端点0,在接收SETUP令牌后,USBHS清除此位。该位比该寄存器的NAKS位和寄存器USBHS_DCTL的GINS位优先级要高,如果STALL和NAKS位都被置位,STALL位生效。</td></tr><tr><td>20</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>19:18</td><td>EPTYPE[1:0]</td><td>端点类型该域固定为'00',控制端点。</td></tr><tr><td>17</td><td>NAKS</td><td>NAK状态当该寄存器的STALL位和寄存器USBHS_DCTL的位GINS被清零,该位控制USBHS的NAK状态。0:根据端点Tx FIFO的状态,USBHS发送数据或握手包1:USBHS总为IN令牌发送NAK握手包该位是只读位,可以通过该寄存器的位CNAK和位SNAK控制该位</td></tr><tr><td>16</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>15</td><td>EPACT</td><td>端点激活对于端点0来说,该域固定为'1'</td></tr><tr><td>14:2</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>1:0</td><td>MPL[1:0]</td><td>最大包长域定义了控制数据包的最大包长,如USB 2.0协议所描述,对控制传输而言,有四种包长度:00:64字节01:32字节10:16字节11:8字节</td></tr></table>
+
+# 设备 IN 端点 x 控制寄存器（USBHS_DIEPxCTL）（x = 1..7， x 是端点编号）
+
+地址偏移：0x0900 + (x * 0x20)
+
+复位值：0x0000 0000
+
+
+该寄存器采用字（32 位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td>EPEN</td><td>EPD</td><td>SODDFRM/SD1PID</td><td>SDOPID/SEVENFRM</td><td>SNAK</td><td>CNAK</td><td></td><td colspan="3">TXFNUM[3.0]</td><td>STALL</td><td>保留</td><td colspan="2">EPTYPE[1.0]</td><td>NAKS</td><td>EOFRMDPID</td></tr><tr><td>rs</td><td>rs</td><td>w</td><td>w</td><td>w</td><td>w</td><td></td><td colspan="3">rw</td><td>rw/rs</td><td></td><td colspan="2">rw</td><td>r</td><td>r</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></table>
+
+<table><tr><td>EPACT</td><td>保留</td><td>MPL[10:0]</td></tr><tr><td>rw</td><td></td><td>rw</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31</td><td>EPEN</td><td>端点使能软件置位,USBHS清零0:端点除能1:端点使能软件应该按照操作指南使能或除能端点</td></tr><tr><td>30</td><td>EPD</td><td>端点除能软件可通过置位该位从而除能端点,软件应该按照操作指南使能或除能端点。</td></tr><tr><td rowspan="2">29</td><td>SODDFRM</td><td>设置奇数帧(适用于同步IN端点)软件通过置1该位置1该寄存器的EOFRM位</td></tr><tr><td>SD1PID</td><td>设置DATA1 PID(适用于中断和大容量IN端点)软件可通过置1该位置1该寄存器的DPID位</td></tr><tr><td rowspan="2">28</td><td>SEVENFRM</td><td>设置偶数帧(适用于同步IN端点)软件通过置1该位清零该寄存器的EOFRM位</td></tr><tr><td>SD0PID</td><td>设置DATA0 PID(适用于中断和大容量IN端点)软件可通过置1该位清零该寄存器的DPID位</td></tr><tr><td>27</td><td>SNAK</td><td>设置NAK软件置1该位置1该寄存器的NAKS位</td></tr><tr><td>26</td><td>CNAK</td><td>清零NAK软件置1该位清零该寄存器的NAKS位</td></tr><tr><td>25:22</td><td>TXFNUM[3:0]</td><td>Tx FIFO编号该位定义了IN端点的Tx FIFO编号</td></tr><tr><td>21</td><td>STALL</td><td>STALL握手当接收IN令牌时,软件可以通过置1该位发送STALL握手包。该位比该寄存器的NAKS位和寄存器USBHS_DCTL的GINS位优先级要高,如果STALL和NAKS位都被置位,STALL位生效。对于控制IN端点:当对应的OUT端点接收到SETUP令牌时,只有USBHS可以清零此位,软件不可清除此位。对于中断或大容量IN端点:只有软件可以清零此位。</td></tr><tr><td>20</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>19:18</td><td>EPTYPE[1:0]</td><td>端点类型该域定义端点的传输类型:00:控制01:同步10:大容量11:中断</td></tr><tr><td>17</td><td>NAKS</td><td>NAK状态当该寄存器的STALL位和寄存器USBHS_DCTL的位GINS被清零,该位控制USBHS的NAK状态:0:根据端点Tx FIFO的状态,USBHS发送数据或握手包1:USBHS总为IN令牌发送NAK握手包该位是只读位,可以通过该寄存器的位CNAK和位SNAK控制该位</td></tr><tr><td rowspan="2">16</td><td>EOFRM</td><td>奇偶帧(适用于同步IN端点)对于同步传输,软件通过使用该位控制USBHS只在奇数帧或偶数帧为IN事务发送数据包,如果当前帧号的奇偶性不匹配该位,USBHS回复一个零长度的包:0:只在偶数帧发送数据1:只在奇数帧发送数据</td></tr><tr><td>DPID</td><td>端点数据PID(适用于中断或大容量IN端点)在端点或大容量传输中,有数据PID翻转机制,在传输开始之前,软件通过设定SD0PID来设置此位,按照USB协议中描述的数据PID翻转机制,USBHS在传输过程中保持该位。0:数据包的PID是DATA01:数据包的PID是DATA1</td></tr><tr><td>15</td><td>EPACT</td><td>端点激活该位控制端点是否激活,当端点没有激活,忽略任何令牌,不做任何回复。</td></tr><tr><td>14:11</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>10:0</td><td>MPL[10:0]</td><td>该域定义最大包长</td></tr></table>
+
+# 设备 OUT 端点 0 控制寄存器（USBHS_DOEP0CTL）
+
+地址偏移：0x0B00
+
+复位值：0x0000 8000
+
+
+该寄存器采用字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td>EPEN</td><td>EPD</td><td colspan="2">保留.</td><td>SNAK</td><td>CNAK</td><td colspan="4">保留</td><td>STALL</td><td>SNOOP</td><td colspan="2">EPTYPE[1:0]</td><td>NAKS</td><td>保留</td></tr><tr><td>rs</td><td>r</td><td></td><td></td><td>w</td><td>w</td><td></td><td></td><td></td><td></td><td>rs</td><td>rw</td><td>r</td><td></td><td>r</td><td></td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr></table>
+
+<table><tr><td>EPACT</td><td>保留</td><td>MPL[1:0]</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31</td><td>EPEN</td><td>端点使能软件置位,USBHS清零0:端点除能1:端点使能软件应该按照操作指南使能或除能端点。</td></tr><tr><td>30</td><td>EPD</td><td>端点除能对于OUT端点0,该位固定为0</td></tr><tr><td>29:28</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>27</td><td>SNAK</td><td>设置NAK软件置1该位置1该寄存器的NAKS位</td></tr><tr><td>26</td><td>CNAK</td><td>清零NAK软件置1该位清零该寄存器的NAKS位</td></tr><tr><td>25:22</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>21</td><td>STALL</td><td>STALL握手在OUT事务中,软件可以通过置1该位发送STALL握手包,对于OUT端点0,在接收SETUP令牌后,USBHS清除此位。该位比该寄存器的NAKS位和寄存器USBHS_DCTL的GINS位优先级要高,即如果STALL和NAKS位都被置位,STALL位生效。</td></tr><tr><td>20</td><td>SNOOP</td><td>调查模式该位控制OUT端点的调查模式,在调查模式中,USBHS不再检查接收数据包的CRC值0:调查模式除能1:调查模式使能</td></tr><tr><td>19:18</td><td>EPTYPE[1:0]</td><td>端点类型对于控制端点,该位固定为&quot;00&quot;</td></tr><tr><td>17</td><td>NAKS</td><td>NAK状态当该寄存器的STALL位和寄存器USBHS_DCTL的位GINS被清零,该位控制USBHS的NAK状态:0:根据端点Rx FIFO的状态,USBHS发送数据或握手包1:USBHS为OUT事务发NAK握手包该位是只读位,通过该寄存器的CNAK和SNAK位控制该位</td></tr><tr><td>16</td><td>保留</td><td>必须保留为复位值。</td></tr></table>
+
+<table><tr><td>15</td><td>EPACT</td><td>端点激活对于端点0,该域固定为1</td></tr><tr><td>14:2</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>1:0</td><td>MPL[1:0]</td><td>最大包长该位是只读位,其数值来自于寄存器USBHS_DIEP0CTL的位MPL:00:64字节01:32字节10:16字节11:8字节</td></tr></table>
+
+# 设备 OUT 端点 x 控制寄存器（USBHS_DOEPxCTL）（x= 1..7, x 是端点编号）
+
+地址偏移：0x0B00 + (x * 0x20)
+
+复位值：0x0000 0000
+
+软件用该寄存器控制 OUT 端点 0 以外的每个逻辑 OUT 端点
+
+
+该寄存器采用字（32位）访问
+
+
+<table><tr><td>31</td><td>30</td><td>29</td><td>28</td><td>27</td><td>26</td><td>25</td><td>24</td><td>23</td><td>22</td><td>21</td><td>20</td><td>19</td><td>18</td><td>17</td><td>16</td></tr><tr><td>EPEN</td><td>EPD</td><td>SODFRM/SD1PID</td><td>SEVENFRM/SD0PID</td><td>SNAK</td><td>CNAK</td><td colspan="4">保留</td><td>STALL</td><td>SNOOP</td><td colspan="2">EPTYPE[1:0]</td><td>NAKS</td><td>EOFRM/DPID</td></tr><tr><td>rs</td><td>rs</td><td>w</td><td>w</td><td>w</td><td>w</td><td colspan="4"></td><td>rw/rs</td><td>rw</td><td colspan="2">rw</td><td>r</td><td>r</td></tr><tr><td>15</td><td>14</td><td>13</td><td>12</td><td>11</td><td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>0</td></tr><tr><td>EPACT</td><td colspan="4">保留</td><td colspan="11">MPL[10:0]</td></tr><tr><td colspan="10">rw</td><td colspan="6">rw</td></tr></table>
+
+<table><tr><td>位/位域</td><td>名称</td><td>描述</td></tr><tr><td>31</td><td>EPEN</td><td>端点使能软件置位,USBHS清零0:端点除能1:端点使能软件应该按照操作指南使能或除能端点。</td></tr><tr><td>30</td><td>EPD</td><td>端点除能软件通过置1该位除能端点,软件应该按照操作指南使能或除能端点。</td></tr><tr><td>29</td><td>SODDFRM</td><td>设置奇数帧(适用于同步OUT端点)该位只针对同步OUT端点有效软件置1该位来置位该寄存器的EOFRM位</td></tr><tr><td></td><td>SD1PID</td><td>设置DATA1 PID(适用于中断和大容量OUT端点)软件置1该位来置位该寄存器的DPID位</td></tr><tr><td rowspan="2">28</td><td>SEVENFRM</td><td>设置偶数帧(适用于同步OUT端点)软件置1该位来清零该寄存器的EOFRM位</td></tr><tr><td>SD0PID</td><td>设置DATA0 PID(适用于中断和大容量OUT端点)软件置1该位来清零该寄存器的DPID位</td></tr><tr><td>27</td><td>SNAK</td><td>设置NAK软件置1该位从而置1该寄存器的NAKS位</td></tr><tr><td>26</td><td>CNAK</td><td>清零NAK软件置1该位从而清零该寄存器的NAKS位</td></tr><tr><td>25:22</td><td>保留</td><td>必须保留为复位值。</td></tr><tr><td>21</td><td>STALL</td><td>STALL握手在OUT事务中,软件可以通过置1该位发送STALL握手包。该位比该寄存器的NAKS位和寄存器USBHS_DCTL的GINS位优先级要高,如果STALL和NAKS位都被置位,STALL位生效。对于控制OUT端点:当OUT端点接收SETUP令牌时,只有USBHS可以清零该位,软件不可清零此位。对于中断或大容量OUT端点只有软件可以清零该位</td></tr><tr><td>20</td><td>SNOOP</td><td>调查模式该位控制OUT端点的调查模式,在调查模式中,USBHS不再检查接收数据包的CRC值0:调查模式除能1:调查模式使能</td></tr><tr><td>19:18</td><td>EPTYPE[1:0]</td><td>端点类型该域定义端点的传输类型00:控制01:同步10:大容量11:中断</td></tr><tr><td>17</td><td>NAKS</td><td>NAK状态当该寄存器的STALL位和寄存器USBHS_DCTL的位GONS被清零,该位控制USBHS的NAK状态:0:根据端点的Rx FIFO的状态,发送握手包1:USBHS为OUT事务发送NAK握手该位是只读位,通过该寄存器的CNAK和SNAK位控制该位</td></tr><tr><td>16</td><td>EOFRM</td><td>奇偶帧(适用于同步OUT端点)对于同步传输,软件通过使用该位控制USBHS只在奇数帧或偶数帧发送数据包给OUT事务,如果当前帧号的奇偶性不匹配该位,USBHS不保存数据包0:只在偶数帧发送数据</td></tr></table>
+
