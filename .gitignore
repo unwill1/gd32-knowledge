@@ -1,0 +1,18 @@
+# Local scratch and generated review artifacts
+/tmp/
+/work/
+/output/
+/.agents/
+**/node_modules/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# Confidential material: do not upload until NDA storage authorization is confirmed
+/GD32H77x_H78x/
+/_archive/GD32H77x_H78x/
